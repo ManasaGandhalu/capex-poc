@@ -1,0 +1,8 @@
+{
+  "build": {
+    "target": "."
+  },
+  "requires": {
+    "db": "hana-cloud"
+  }
+}
