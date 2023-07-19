@@ -1,5 +1,5 @@
 ID,createdAt,createdBy,modifiedAt,modifiedBy,IsArchived,Type
 1,,,,,0,Budgetary
-2,,,,,0,AgainstBudgetary
+2,,,,,0,Against Budgetary
 3,,,,,0,Expense
-4,,,,,0,Supplementory
+4,,,,,0,Supplementary

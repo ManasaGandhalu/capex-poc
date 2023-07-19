@@ -64,17 +64,17 @@ entity MasterStage : fingerprints {
 
 entity MasterAmount : fingerprints {
     key ID : Integer;
-    Value   : Double
-    
+    Range   : String;
+    RangeMin   : Double;
+    RangeMax   : Double;
 }
 
 entity MasterTATLevel : fingerprints {
     key ID : Integer;
     Level   : String(30);
-
 }
 
-entity MasterAssetype : fingerprints {
+entity MasterAssettype : fingerprints {
     key ID : Integer;
     Type    : String(30);
 }

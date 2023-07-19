@@ -1,1 +1,9 @@
 ID,createdAt,createdBy,modifiedAt,modifiedBy,IsArchived,Stage
+1,,,,,0,Not Applicable
+2,,,,,0,Not Started
+3,,,,,0,IO
+4,,,,,0,PO
+5,,,,,0,GRN
+6,,,,,0,AUC
+7,,,,,0,CWIP
+8,,,,,0,FA Card
