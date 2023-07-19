@@ -74,7 +74,7 @@ entity MasterTATLevel : fingerprints {
     Level   : String(30);
 }
 
-entity MasterAssettype : fingerprints {
+entity MasterAssetType : fingerprints {
     key ID : Integer;
     Type    : String(30);
 }

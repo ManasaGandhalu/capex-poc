@@ -9,7 +9,7 @@ service AdminService {
     entity Employee as projection on db.Employee;
     entity MediaStore as projection on db.MediaStore;
     entity MasterAmount as projection on db.MasterAmount;
-    entity MasterAssetype as projection on db.MasterAssetype;
+    entity MasterAssetType as projection on db.MasterAssetType;
     entity MasterExpenseType as projection on db.MasterExpenseType;
     entity MasterProjectedReturn as projection on db.MasterProjectedReturn;
     entity MasterTATLevel as projection on db.MasterTATLevel;
