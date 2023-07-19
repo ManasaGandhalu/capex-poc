@@ -1,8 +1,8 @@
 ID,createdAt,createdBy,modifiedAt,modifiedBy,IsArchived,Range,RangeMin,RangeMax
-1,,,,,0,Below 10L Lacs
-2,,,,,0,10-25 Lacs
-3,,,,,0,25-50 Lacs
-4,,,,,0,50-100 Lacs
-5,,,,,0,100-150 Lacs
-6,,,,,0,150-200 Lacs
-7,,,,,0,Above 200 Lacs
+1,,,,,0,Below 10L Lacs,,1000000
+2,,,,,0,10-25 Lacs,1000000,2500000
+3,,,,,0,25-50 Lacs,2500000,5000000
+4,,,,,0,50-100 Lacs,5000000,10000000
+5,,,,,0,100-150 Lacs,10000000,15000000
+6,,,,,0,150-200 Lacs,15000000,20000000
+7,,,,,0,Above 200 Lacs,20000000,
