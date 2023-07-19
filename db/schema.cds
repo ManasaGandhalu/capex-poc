@@ -9,6 +9,8 @@ entity CER : fingerprints{
     key CERNumber   : Integer;
     BudgetaryID     : Integer;
     CurrentStage    : String(20) ;  
+    CurrentApproverLevel :  String(30);
+    WorkflowRequestId : String(50);
     Status          : String(20) ; 
     TATLevel        : String(10);
     TATUser         : String(30);
@@ -25,6 +27,12 @@ entity CER : fingerprints{
     ProjectCompletionTime : String(100)
 }
 
+entity CERApproval : fingerprints {
+    key ID      : Integer;
+    ApprovalLevel : String(30);
+    ApprovalStatus : String(50);
+    CER         : Association to CER;
+}
 entity MediaStore : fingerprints {
     key ID      : Integer;
     FileName    : String(30);
@@ -53,3 +61,36 @@ entity MasterStage : fingerprints {
     key ID : Integer;
     Stage    : String(30);
 }
+
+entity MasterAmount : fingerprints {
+    key ID : Integer;
+    Value   : Double
+    
+}
+
+entity MasterTATLevel : fingerprints {
+    key ID : Integer;
+    Level   : String(30);
+
+}
+
+entity MasterAssetype : fingerprints {
+    key ID : Integer;
+    Type    : String(30);
+}
+
+entity MasterExpenseType : fingerprints {
+    key ID : Integer;
+    Type    : String(30);
+}
+
+entity MasterRecurringExpense : fingerprints {
+    key ID : Integer;
+    Expense    : String(30);
+}
+
+entity MasterProjectedReturn : fingerprints {
+    key ID : Integer;
+    Value    : String(30);
+}
+
