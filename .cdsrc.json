@@ -5,8 +5,7 @@
   "requires": {
     "db": "hana-cloud"
   },
-  "odata":{
+  "odata": {
     "version": "v4"
   }
-  
 }

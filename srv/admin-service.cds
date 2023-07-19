@@ -14,5 +14,16 @@ service AdminService {
     entity MasterProjectedReturn as projection on db.MasterProjectedReturn;
     entity MasterTATLevel as projection on db.MasterTATLevel;
     entity MasterRecurringExpense as projection on db.MasterRecurringExpense;
+    entity ApprovalQuery as projection on db.ApprovalQuery {
+        *,
 
+        @Core.Computed: false
+        virtual null as attachment: LargeBinary,
+
+        @Core.Computed: false
+        virtual null as attachmentName : String,
+        
+        @Core.Computed: false
+        virtual null as attachmentType: String
+    };
 }

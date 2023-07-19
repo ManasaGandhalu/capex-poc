@@ -1,8 +1,18 @@
 ---
 spring:
   config.activate.on-profile: default
-cds:
   datasource:
-    auto-config.enabled: false
-    odataV4.endpoint.path: '/api'
-    odataV2.endpoint.path: '/api-v2'
+    url: "jdbc:sqlite:sqlite.db"
+    driver-class-name: org.sqlite.JDBC
+    hikari:
+      maximum-pool-size: 1
+cds:
+  sql:
+    supportedLocales: "*"
+sap_document_service:
+  enabled: false
+  api_url: 
+  repository_id: 
+  auth_url:
+  client_id: 
+  client_secret:

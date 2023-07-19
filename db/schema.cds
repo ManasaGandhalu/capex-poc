@@ -28,16 +28,21 @@ entity CER : fingerprints{
 }
 
 entity CERApproval : fingerprints {
-    key ID      : Integer;
+    key ID: Integer;
     ApprovalLevel : String(30);
     ApprovalStatus : String(50);
     CER         : Association to CER;
 }
-entity MediaStore : fingerprints {
-    key ID      : Integer;
-    FileName    : String(30);
-    ContentType : String(30);
-    Size        : Double;
+entity MediaStore : cuid, fingerprints {
+    mediaId: String;
+    mediaName: String;
+    content: LargeBinary;
+    contentType: String;
+    url: String;
+    directoryName: String;
+    directoryId: String;
+    status: String;
+    mediaSize: Int64;
 }
 
 entity Employee :  cuid,fingerprints{
@@ -94,3 +99,18 @@ entity MasterProjectedReturn : fingerprints {
     Value    : String(30);
 }
 
+entity ApprovalQuery: cuid, fingerprints {
+    approvalId: Int64;
+    comment: String;
+    mediaStoreId: UUID;
+}
+
+// @cds.persistence.skip
+// entity ApprovalReply: cuid, fingerprints {
+//     approvalQueryId: UUID;
+//     approvalId: Int64;
+//     comment: String;
+//     attachment: LargeBinary @Core.MediaType: attachmentType @Core.ContentDisposition.Filename: attachmentName @Core.ContentDisposition.Type: 'attachment';
+//     attachmentName : String;
+//     attachmentType: String @Core.IsMediaType;
+// }

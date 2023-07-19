@@ -20,22 +20,30 @@
 			<artifactId>cds-starter-spring-boot</artifactId>
 		</dependency>
 
+		<!-- ODATA V2 PROTOCOL ADAPTER -->
 		<dependency>
 			<groupId>com.sap.cds</groupId>
 			<artifactId>cds-adapter-odata-v2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- ODATA PROTOCOL ADAPTER -->
+		<!-- ODATA V4 PROTOCOL ADAPTER -->
 		<dependency>
 			<groupId>com.sap.cds</groupId>
 			<artifactId>cds-adapter-odata-v4</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Document Service - Apache CMIS Client -->
 		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
+			<groupId>org.apache.chemistry.opencmis</groupId>
+			<artifactId>chemistry-opencmis-client-impl</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 
@@ -122,9 +130,8 @@
 						<configuration>
 							<commands>
 								<command>build --for java</command>
-								<command>deploy --to h2 --dry &gt;
+								<command>deploy --to sql --dry &gt;
 									"${project.basedir}/src/main/resources/schema.sql"</command>
-							
 								<command>compile ${project.basedir} -s all -l all -2 edmx-v2 -o ${project.basedir}/src/main/resources/edmx/v2</command>
 							</commands>
 						</configuration>
