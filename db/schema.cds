@@ -5,14 +5,17 @@ aspect fingerprints: managed {
     IsArchived: Boolean default false;
 }
 
-entity CER : fingerprints{
-    key CERNumber   : Integer;
-    BudgetaryID     : Integer;
-    CurrentStage    : String(20) ;  
-    CurrentApproverLevel :  String(30);
-    WorkflowRequestId : String(50);
-    Status          : String(20) ; 
-    TATLevel        : String(10);
+entity CER : cuid, fingerprints{
+    CERType         : Association to MasterCERType;
+    Status          : Association to MasterStatus ; 
+    CurrentStage    : Association to MasterStage;  
+    CurrentApprovalLevel :  Association to MasterTATLevel;
+    CERLineItems     : Composition of many CERLineItem on $self.ID = CERLineItems.CER_ID;
+    CERApprovals     :  Composition of many CERApproval on $self.ID = CERApprovals.CER_ID;
+    CERNumber   : Integer;
+    BudgetaryID     : Integer; 
+    WorkflowRequestId : String(50);  
+    TotalApprovalLevels :  Integer;
     TATUser         : String(30);
     Amount          : Double;
     Site            : String(50);
@@ -24,14 +27,28 @@ entity CER : fingerprints{
     CapexDriver     : String(30);
     Currency        : String(10);
     ProjectValue    : Double;
-    ProjectCompletionTime : String(100)
+    ProjectCompletionTime : String(100);
+    CostCenter      :String(50);
+    CerLocation     : String(50);
+
+    
 }
 
-entity CERApproval : fingerprints {
-    key ID      : Integer;
+entity CERLineItem : cuid, fingerprints {
+    Particular : String(50);
+    Description : String(200);
+    Unit        : Integer;
+    UOM         : String(30);
+    PerUnitCost : Double;
+    NetCost     : Double;
+    Tax         : Double;
+    GrossCost   : Double;
+    CER_ID       : UUID;
+}
+entity CERApproval : cuid,fingerprints {
     ApprovalLevel : String(30);
     ApprovalStatus : String(50);
-    CER         : Association to CER;
+    CER_ID         : UUID ;
 }
 entity MediaStore : fingerprints {
     key ID      : Integer;
