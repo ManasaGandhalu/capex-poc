@@ -11,7 +11,7 @@ entity CER : cuid, db.fingerprints {
     CurrentApprovalLevel :  Association to db.MasterTATLevel;
     CERLineItems     : Composition of many CERLineItem on $self.ID = CERLineItems.CER_ID;
     CERApprovals     :  Composition of many CERApproval on $self.ID = CERApprovals.CER_ID;
-    CERNumber   : Integer;
+    CERCode   : String;
     BudgetaryID     : Integer; 
     WorkflowRequestId : String(50);  
     TotalApprovalLevels :  Integer;
