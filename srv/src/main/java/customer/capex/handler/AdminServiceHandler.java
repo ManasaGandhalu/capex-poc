@@ -1,5 +1,7 @@
 package customer.capex.handler;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,10 @@ import com.sap.cds.services.persistence.PersistenceService;
 import cds.gen.adminservice.AdminService_;
 import cds.gen.adminservice.ApprovalQuery;
 import cds.gen.adminservice.ApprovalQuery_;
+import cds.gen.adminservice.CERApproval;
+import cds.gen.adminservice.CERApproval_;
+import cds.gen.adminservice.Cer;
+import cds.gen.adminservice.Cer_;
 import customer.capex.service.CERService;
 
 @Component
@@ -40,8 +46,23 @@ public class AdminServiceHandler implements EventHandler {
     }
 
     @After(event = CqnService.EVENT_READ, entity = ApprovalQuery_.CDS_NAME)
-    void afterReadApprovalQuery(ApprovalQuery view, CdsReadEventContext context) {
-        cerService.afterReadApprovalQuery(view, context);
+    void afterReadApprovalQuery(List<ApprovalQuery> list, CdsReadEventContext context) {
+        cerService.afterReadApprovalQuery(list, context);
+    }
+
+    @After(event = CqnService.EVENT_CREATE, entity = Cer_.CDS_NAME)
+    void afterCreateCER(Cer view, CdsCreateEventContext context) {
+        cerService.afterCreateCER(view, context);
+    }
+
+    @After(event = CqnService.EVENT_READ, entity = Cer_.CDS_NAME)
+    void afterReadCER(List<Cer> list, CdsReadEventContext context) {
+        cerService.afterReadCER(list, context);
+    }
+
+    @After(event = CqnService.EVENT_READ, entity = CERApproval_.CDS_NAME)
+    void afterReadCERApproval(List<CERApproval> list, CdsReadEventContext context) {
+        cerService.afterReadCERApproval(list, context);
     }
 
 }

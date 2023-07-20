@@ -32,7 +32,7 @@ entity CER : cuid, db.fingerprints {
     CostCenter      :String(50);
     CerLocation     : String(50);
     BudgetaryTotalCost  : Double default 0.0;
-    AgainstBudgetaryTotalCost : Double default 0.0   
+    virtual AgainstBudgetaryTotalCost : Double default 0.0   
 }
 
 entity CERLineItem : cuid, db.fingerprints {
@@ -47,14 +47,14 @@ entity CERLineItem : cuid, db.fingerprints {
     CER_ID       : UUID;
 }
 
-entity CERApproval : db.fingerprints {
-    key ID: Integer;
+entity CERApproval : cuid, db.fingerprints {
     CER_ID: UUID;
     TATUser: Association to capex.Employee on upper(TATUser.Email) = upper($self.TATUserEmail);
     TAT: Association to capex.MasterTAT on TAT.ID = $self.TAT_ID;
     TAT_ID: Integer;
     TATUserEmail: String;
     Level: Integer;
+    Status: String default 'Pending';
     TATDurationMinutes: Integer;
 }
 
@@ -73,15 +73,22 @@ entity MediaStore : cuid, db.fingerprints {
 entity Employee :  cuid, db.fingerprints{
     FirstName   : String(30);
     LastName    : String(30);
-    Email       : String(30) not null;
-    Mobile      : Integer
+    Email       : String(300) not null;
+    Mobile      : Integer;
+    Designation : String(50);
 }
 
 entity ApprovalQuery: cuid, db.fingerprints {
-    CERApprovalId: Int64;
+    Recipients: Composition of many ApprovalQueryRecipients on Recipients.ApprovalQueryID = $self.ID;
+    CERApprovalId: UUID;
     Comment: String;
     MediaStoreId: UUID;
-    
+}
+
+entity ApprovalQueryRecipients: cuid, db.fingerprints {
+    ApprovalQueryID: UUID;
+    Name: String;
+    Email: String(300);
 }
 
 // @cds.persistence.skip
@@ -93,3 +100,8 @@ entity ApprovalQuery: cuid, db.fingerprints {
 //     AttachmentName : String;
 //     AttachmentType: String @Core.IsMediaType;
 // }
+
+type ApprovalQueryStatistics {
+    TotalQueries: Int64 default 0;
+    TotalAttachments: Int64 default 0;
+}
