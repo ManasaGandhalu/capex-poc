@@ -9,6 +9,7 @@ entity CER : cuid, fingerprints{
     CERType         : Association to MasterCERType;
     Status          : Association to MasterStatus ; 
     CurrentStage    : Association to MasterStage;  
+    
     CurrentApprovalLevel :  Association to MasterTATLevel;
     CERLineItems     : Composition of many CERLineItem on $self.ID = CERLineItems.CER_ID;
     CERApprovals     :  Composition of many CERApproval on $self.ID = CERApprovals.CER_ID;
@@ -111,3 +112,9 @@ entity MasterProjectedReturn : fingerprints {
     Value    : String(30);
 }
 
+entity MasterTATUser : fingerprints {
+    key ID      : Integer;
+    FirstName   : String(30);
+    LastName    : String(30);
+    Email       : String(30);
+}
