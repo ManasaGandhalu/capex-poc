@@ -16,8 +16,8 @@ service AdminService {
     entity CER as projection on db.CER;
     entity CERApproval as projection on db.CERApproval {
         *,
-        virtual 0 as TotalAttachments: Int64,
-        virtual 0 as TotalQueries: Int64
+        virtual 0 as TotalQueries: Int64,
+        virtual 0 as TotalAttachments: Integer
     };
     
     entity ApprovalQuery as projection on db.ApprovalQuery {
@@ -34,4 +34,7 @@ service AdminService {
     };
 
     entity ApprovalQueryRecipients as projection on db.ApprovalQueryRecipients;
+
+    // action updateApprovalStatus(CerApprovalId: UUID, Status: String);
+    
 }

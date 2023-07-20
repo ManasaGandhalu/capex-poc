@@ -67,13 +67,16 @@ public class CERService {
                     cerApproval.setId(UUID.randomUUID().toString());
                     cerApproval.setCerId(view.getId());
                     cerApproval.setLevel(tatLevel.getLevel());
-                    cerApproval.setStatus("Pending");
+                    cerApproval.setStatus("None");
                     cerApproval.setTATDurationMinutes(tatLevel.getTATDurationMinutes());
                     cerApproval.setTatId(tatLevel.getTatId());
                     cerApproval.setTATUserEmail(tatLevel.getTATUserEmail());
                     approvals.add(cerApproval);
                 });
-                view.setCurrentTATLevel(tatLevels.get(0).getLevel());
+                // initializing 1st step
+                CERApproval currentApproval = approvals.get(0);
+                currentApproval.setStatus("Pending"); 
+                view.setCurrentTATLevel(currentApproval.getLevel());
             }
             view.setCERApprovals(approvals);
             view.setTotalTATLevels(tatLevels.size());
@@ -103,5 +106,20 @@ public class CERService {
             view.setTotalAttachments(stats.getTotalAttachments() != null ? stats.getTotalAttachments() : 0);
         });
     }
+
+    // public void onUpdateApprovalStatus(String cerApprovalId, String status) {
+    //     CERApproval cerApproval = cqnRepository.findCERApproval(cerApprovalId);
+    //     cerApproval.setStatus(status);
+    //     cqnRepository.updateCERApproval(cerApproval);
+    //     Integer currentTATLevel = cerApproval.getLevel();
+    //     if(status == "Approved") {
+    //         CERApproval nextApproval = cqnRepository.findCERApprovalByCerIdandLevel(cerApproval.getCerId(), currentTATLevel + 1);
+    //         if(nextApproval != null) {
+    //             currentTATLevel = nextApproval.getLevel();
+    //             status = "Pending";
+    //         }
+    //     }
+    //     cqnRepository.updateCERStatusAndTATLevel(status, currentTATLevel);
+    // }
 
 }

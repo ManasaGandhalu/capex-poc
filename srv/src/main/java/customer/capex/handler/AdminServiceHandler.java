@@ -12,6 +12,7 @@ import com.sap.cds.services.cds.CdsReadEventContext;
 import com.sap.cds.services.cds.CqnService;
 import com.sap.cds.services.handler.EventHandler;
 import com.sap.cds.services.handler.annotations.After;
+import com.sap.cds.services.handler.annotations.On;
 import com.sap.cds.services.handler.annotations.ServiceName;
 import com.sap.cds.services.persistence.PersistenceService;
 
@@ -22,6 +23,7 @@ import cds.gen.adminservice.CERApproval;
 import cds.gen.adminservice.CERApproval_;
 import cds.gen.adminservice.Cer;
 import cds.gen.adminservice.Cer_;
+// import cds.gen.adminservice.UpdateApprovalStatusContext;
 import customer.capex.service.CERService;
 
 @Component
@@ -37,7 +39,7 @@ public class AdminServiceHandler implements EventHandler {
     CERService cerService;
 
     /*
-     * After Event Listeners
+     * After Event Handlers
      */
 
     @After(event = CqnService.EVENT_CREATE, entity = ApprovalQuery_.CDS_NAME)
@@ -64,5 +66,16 @@ public class AdminServiceHandler implements EventHandler {
     void afterReadCERApproval(List<CERApproval> list, CdsReadEventContext context) {
         cerService.afterReadCERApproval(list, context);
     }
+
+    // /**
+    //  * On Event Handlers
+    //  */
+    // @On(event = CqnService.EVENT_CREATE)
+    // void onUpdateApprovalStatus(UpdateApprovalStatusContext context) {
+    //     String cerApprovalId = context.getCerApprovalId();
+    //     String status = context.getStatus();
+    //     cerService.onUpdateApprovalStatus(cerApprovalId, status);
+    //     context.setCompleted();
+    // }
 
 }

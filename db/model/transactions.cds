@@ -103,5 +103,5 @@ entity ApprovalQueryRecipients: cuid, db.fingerprints {
 
 type ApprovalQueryStatistics {
     TotalQueries: Int64 default 0;
-    TotalAttachments: Int64 default 0;
+    TotalAttachments: Integer default 0;
 }
