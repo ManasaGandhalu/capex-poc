@@ -1,6 +1,6 @@
 [
   "src/gen/**/*.hdbview",
   "src/gen/**/*.hdbindex",
-  "src/gen/**/*.hdbconstraint"
-  
+  "src/gen/capex.MediaStore.hdbtable",
+  "src/gen/data/capex-MediaStore.hdbtabledata"
 ]
