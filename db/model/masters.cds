@@ -24,11 +24,6 @@ entity MasterAmount : db.fingerprints {
     RangeMax   : Double;
 }
 
-entity MasterTATLevel : db.fingerprints {
-    key ID : Integer;
-    Level   : String(30);
-}
-
 entity MasterAssetType : db.fingerprints {
     key ID : Integer;
     Type    : String(30);
@@ -49,9 +44,20 @@ entity MasterProjectedReturn : db.fingerprints {
     Value    : String(30);
 }
 
-entity MasterTATUser : db.fingerprints {
-    key ID      : Integer;
-    FirstName   : String(30);
-    LastName    : String(30);
-    Email       : String(30);
+entity MasterTAT : db.fingerprints {
+    key ID: Integer;
+    CERType: Association to capex.MasterCERType on CERType.ID = $self.CERType_ID;
+    TATLevels: Composition of many MasterTATLevel on TATLevels.TAT_ID = $self.ID;
+    CERType_ID: Integer;
+    Description: String;
+}
+
+entity MasterTATLevel : db.fingerprints {
+    key ID: Integer;
+    TATUser: Association to capex.Employee on upper(TATUser.Email) = upper($self.TATUserEmail);
+    TAT: Association to capex.MasterTAT on TAT.ID = $self.TAT_ID;
+    TAT_ID: Integer;
+    TATUserEmail: String(300);
+    Level: Integer;
+    TATDurationMinutes: Integer;
 }

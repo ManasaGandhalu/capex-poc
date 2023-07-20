@@ -27,7 +27,7 @@ public class CERService {
         media.setContentType(view.getAttachmentType());
         media.setBytes(view.getAttachment());
         MediaStore mediaStore = mediaStoreService.upload(MediaDirectory.APPROVAL_QUERY, view.getId(), media);
-        view.setMediaStoreId(mediaStore.getId());
+        view.setMediaStoreID(mediaStore.getId());
         cqnRepository.saveApprovalQueryMediaStoreId(view.getId(), mediaStore.getId());
     }
 

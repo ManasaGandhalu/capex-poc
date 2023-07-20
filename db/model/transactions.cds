@@ -8,14 +8,16 @@ entity CER : cuid, db.fingerprints {
     Status          : Association to db.MasterStatus ; 
     CurrentStage    : Association to db.MasterStage;  
     ParentCER       : Association to CER;  
-    CurrentApprovalLevel :  Association to db.MasterTATLevel;
     CERLineItems     : Composition of many CERLineItem on $self.ID = CERLineItems.CER_ID;
     CERApprovals     :  Composition of many CERApproval on $self.ID = CERApprovals.CER_ID;
+    CurrentApproval :  Association to CERApproval on $self.ID = CurrentApproval.CER_ID and $self.CurrentTATLevel = CurrentApproval.Level;
+    TATUser: Association to capex.Employee on upper(TATUser.Email) = upper($self.TATUserEmail);
+    TotalTATLevels :  Integer;
+    CurrentTATLevel: Integer;
+    WorkflowRequestId : String(50);  
+    TATUserEmail         : String(300);
     CERCode   : String;
     BudgetaryID     : Integer; 
-    WorkflowRequestId : String(50);  
-    TotalApprovalLevels :  Integer;
-    TATUser         : String(30);
     Amount          : Double;
     Site            : String(50);
     ProfitCenter    : String(20);
@@ -45,42 +47,49 @@ entity CERLineItem : cuid, db.fingerprints {
     CER_ID       : UUID;
 }
 
-entity CERApproval : cuid, db.fingerprints {
-    ApprovalLevel : String(30);
-    ApprovalStatus : String(50);
-    CER_ID         : UUID ;
+entity CERApproval : db.fingerprints {
+    key ID: Integer;
+    CER_ID: UUID;
+    TATUser: Association to capex.Employee on upper(TATUser.Email) = upper($self.TATUserEmail);
+    TAT: Association to capex.MasterTAT on TAT.ID = $self.TAT_ID;
+    TAT_ID: Integer;
+    TATUserEmail: String;
+    Level: Integer;
+    TATDurationMinutes: Integer;
 }
+
 entity MediaStore : cuid, db.fingerprints {
-    mediaId: String;
-    mediaName: String;
-    content: LargeBinary;
-    contentType: String;
-    url: String;
-    directoryName: String;
-    directoryId: String;
-    status: String;
-    mediaSize: Int64;
+    MediaId: String;
+    MediaName: String;
+    Content: LargeBinary;
+    ContentType: String;
+    Url: String;
+    DirectoryName: String;
+    DirectoryId: String;
+    Status: String;
+    MediaSize: Int64;
 }
 
 entity Employee :  cuid, db.fingerprints{
     FirstName   : String(30);
     LastName    : String(30);
-    Email       : String(30);
+    Email       : String(30) not null;
     Mobile      : Integer
 }
 
 entity ApprovalQuery: cuid, db.fingerprints {
-    approvalId: Int64;
-    comment: String;
-    mediaStoreId: UUID;
+    CERApprovalId: Int64;
+    Comment: String;
+    MediaStoreId: UUID;
+    
 }
 
 // @cds.persistence.skip
 // entity ApprovalReply: cuid, db.fingerprints {
-//     approvalQueryId: UUID;
-//     approvalId: Int64;
-//     comment: String;
-//     attachment: LargeBinary @Core.MediaType: attachmentType @Core.ContentDisposition.Filename: attachmentName @Core.ContentDisposition.Type: 'attachment';
-//     attachmentName : String;
-//     attachmentType: String @Core.IsMediaType;
+//     ApprovalQueryId: UUID;
+//     ApprovalId: Int64;
+//     Comment: String;
+//     Attachment: LargeBinary @Core.MediaType: attachmentType @Core.ContentDisposition.Filename: attachmentName @Core.ContentDisposition.Type: 'attachment';
+//     AttachmentName : String;
+//     AttachmentType: String @Core.IsMediaType;
 // }
