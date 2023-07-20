@@ -9,7 +9,7 @@ entity CER : cuid, fingerprints{
     CERType         : Association to MasterCERType;
     Status          : Association to MasterStatus ; 
     CurrentStage    : Association to MasterStage;  
-    
+    ParentCER       : Association to CER;  
     CurrentApprovalLevel :  Association to MasterTATLevel;
     CERLineItems     : Composition of many CERLineItem on $self.ID = CERLineItems.CER_ID;
     CERApprovals     :  Composition of many CERApproval on $self.ID = CERApprovals.CER_ID;
@@ -31,8 +31,8 @@ entity CER : cuid, fingerprints{
     ProjectCompletionTime : String(100);
     CostCenter      :String(50);
     CerLocation     : String(50);
-
-    
+    BudgetaryTotalCost  : Double default 0.0;
+    AgainstBudgetaryTotalCost : Double default 0.0   
 }
 
 entity CERLineItem : cuid, fingerprints {
