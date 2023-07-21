@@ -1,6 +1,8 @@
 package customer.capex.repository.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -35,20 +37,20 @@ public class CqnRepositoryImpl implements CqnRepository {
     
     @Override
     public ApprovalQuery saveApprovalQuery(ApprovalQuery approvalQuery) {
-        CqnUpsert upsert = Upsert.into(ApprovalQuery_.CDS_NAME).entry(approvalQuery);
+        CqnUpsert upsert = Upsert.into(ApprovalQuery_.class).entry(approvalQuery);
         Result result = db.run(upsert);
 		return result.first(ApprovalQuery.class).orElse(null);
     }
 
     @Override
     public void saveApprovalQueryMediaStoreId(String approvalQueryId, String mediaStoreId) {
-        CqnUpdate update = Update.entity(ApprovalQuery_.CDS_NAME).data(ApprovalQuery.MEDIA_STORE_ID, mediaStoreId).byId(approvalQueryId);
+        CqnUpdate update = Update.entity(ApprovalQuery_.class).data(ApprovalQuery.MEDIA_STORE_ID, mediaStoreId).byId(approvalQueryId);
         Result result = db.run(update);
     }
 
     @Override
     public MasterTAT findMasterTATByCERTypeID(Integer cerTypeId) {
-        CqnSelect select = Select.from(MasterTAT_.CDS_NAME).where(m -> 
+        CqnSelect select = Select.from(MasterTAT_.class).where(m -> 
 			m.get(MasterTAT.CERTYPE_ID).eq(cerTypeId))
             .columns(m -> m._all(), m -> m.expand(MasterTAT.TATLEVELS));
 		Result result = db.run(select);
@@ -96,6 +98,37 @@ public class CqnRepositoryImpl implements CqnRepository {
             return ApprovalQueryStatistics.create();
         }
         return result.single(ApprovalQueryStatistics.class);
+    }
+
+    @Override
+    public CERApproval findCERApproval(String cerApprovalId) {
+        CqnSelect select = Select.from(CERApproval_.class).byId(cerApprovalId);
+		Result result = db.run(select);
+		return result.first(CERApproval.class).orElse(null);
+    }
+
+    @Override
+    public void updateCERApproval(CERApproval cerApproval) {
+        CqnUpdate update = Update.entity(CERApproval_.class).entry(cerApproval).byId(cerApproval.getId());
+        db.run(update);
+    }
+
+    @Override
+    public CERApproval findCERApprovalByCerIdandLevel(String cerId, int level) {
+        CqnSelect select = Select.from(CERApproval_.class).where(c -> c.CER_ID().eq(cerId).and(c.Level().eq(level)));
+		Result result = db.run(select);
+		return result.first(CERApproval.class).orElse(null);
+    }
+
+    @Override
+    public void updateCERStatusIdAndTATLevel(String cerId, int statusId, Integer currentTATLevel) {
+        Map<String, Object> map = new HashMap<>();
+        map.put(Cer.STATUS_ID, statusId);
+        map.put(Cer.CURRENT_TATLEVEL, currentTATLevel);
+        CqnUpdate update = Update.entity(Cer_.class)
+            .data(map)
+            .byId(cerId);
+        db.run(update);
     }
 
 }

@@ -25,4 +25,12 @@ public interface CqnRepository {
 
     public ApprovalQueryStatistics getApprovalQueryStatistics(String cerApprovalId);
 
+    public CERApproval findCERApproval(String cerApprovalId);
+
+    public void updateCERApproval(CERApproval cerApproval);
+
+    public CERApproval findCERApprovalByCerIdandLevel(String cerId, int level);
+
+    public void updateCERStatusIdAndTATLevel(String cerId, int statusId, Integer currentTATLevel);
+
 }

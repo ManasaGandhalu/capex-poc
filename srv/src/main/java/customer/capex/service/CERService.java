@@ -19,6 +19,7 @@ import cds.gen.capex.ApprovalQueryStatistics;
 import cds.gen.capex.MasterTAT;
 import cds.gen.capex.MasterTATLevel;
 import cds.gen.capex.MediaStore;
+import customer.capex.enums.StatusEnum;
 import customer.capex.repository.CqnRepository;
 import customer.capex.service.document_management.enums.MediaDirectory;
 import customer.capex.service.document_management.models.Media;
@@ -67,7 +68,7 @@ public class CERService {
                     cerApproval.setId(UUID.randomUUID().toString());
                     cerApproval.setCerId(view.getId());
                     cerApproval.setLevel(tatLevel.getLevel());
-                    cerApproval.setStatus("None");
+                    cerApproval.setStatus(StatusEnum.NONE.status());
                     cerApproval.setTATDurationMinutes(tatLevel.getTATDurationMinutes());
                     cerApproval.setTatId(tatLevel.getTatId());
                     cerApproval.setTATUserEmail(tatLevel.getTATUserEmail());
@@ -75,12 +76,12 @@ public class CERService {
                 });
                 // initializing 1st step
                 CERApproval currentApproval = approvals.get(0);
-                currentApproval.setStatus("Pending"); 
+                currentApproval.setStatus(StatusEnum.PENDING.status()); 
                 view.setCurrentTATLevel(currentApproval.getLevel());
             }
             view.setCERApprovals(approvals);
             view.setTotalTATLevels(tatLevels.size());
-            view.setStatusId(1);
+            view.setStatusId(StatusEnum.PENDING.code());
             view.setWorkflowRequestId("WF123");
             double totalBudgetaryCost = 0d;
             for(CERLineItem item: view.getCERLineItems()) {
@@ -107,19 +108,20 @@ public class CERService {
         });
     }
 
-    // public void onUpdateApprovalStatus(String cerApprovalId, String status) {
-    //     CERApproval cerApproval = cqnRepository.findCERApproval(cerApprovalId);
-    //     cerApproval.setStatus(status);
-    //     cqnRepository.updateCERApproval(cerApproval);
-    //     Integer currentTATLevel = cerApproval.getLevel();
-    //     if(status == "Approved") {
-    //         CERApproval nextApproval = cqnRepository.findCERApprovalByCerIdandLevel(cerApproval.getCerId(), currentTATLevel + 1);
-    //         if(nextApproval != null) {
-    //             currentTATLevel = nextApproval.getLevel();
-    //             status = "Pending";
-    //         }
-    //     }
-    //     cqnRepository.updateCERStatusAndTATLevel(status, currentTATLevel);
-    // }
+    public CERApproval onUpdateApprovalStatus(String cerApprovalId, String status) {
+        cds.gen.capex.CERApproval cerApproval = cqnRepository.findCERApproval(cerApprovalId);
+        cerApproval.setStatus(status);
+        cqnRepository.updateCERApproval(cerApproval);
+        Integer currentTATLevel = cerApproval.getLevel();
+        if(StatusEnum.APPROVED.status().equals(status)) {
+            cds.gen.capex.CERApproval nextApproval = cqnRepository.findCERApprovalByCerIdandLevel(cerApproval.getCerId(), currentTATLevel + 1);
+            if(nextApproval != null) {
+                currentTATLevel = nextApproval.getLevel();
+                status = StatusEnum.PENDING.status();
+            }
+        }
+        cqnRepository.updateCERStatusIdAndTATLevel(cerApproval.getCerId(), StatusEnum.getEnum(status).code(), currentTATLevel);
+        return Struct.access(cerApproval).as(CERApproval.class);
+    }
 
 }

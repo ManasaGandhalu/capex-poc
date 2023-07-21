@@ -32,13 +32,13 @@ public class MediaStoreRepositoryImpl implements MediaStoreRepository {
     private PersistenceService db;
 
     public MediaStore save(MediaStore mediaStore) {
-		CqnUpsert upsert = Upsert.into(MediaStore_.CDS_NAME).entry(mediaStore);
+		CqnUpsert upsert = Upsert.into(MediaStore_.class).entry(mediaStore);
         Result result = db.run(upsert);
 		return result.first(MediaStore.class).orElse(null);
 	}
 
 	public MediaStore findByDirectoryNameAndDirectoryId(MediaDirectory directoryName, String directoryId) {
-		CqnSelect select = Select.from(MediaStore_.CDS_NAME).where(m -> 
+		CqnSelect select = Select.from(MediaStore_.class).where(m -> 
 			m.get(MediaStore.DIRECTORY_NAME).eq(directoryName.name())
 			.and(m.get(MediaStore.DIRECTORY_ID).eq(directoryId))
 		);
@@ -47,7 +47,7 @@ public class MediaStoreRepositoryImpl implements MediaStoreRepository {
 	}
 
 	public List<MediaStore> findAllSyncableRecords(List<MediaStatus> statusList, int skip, int top) {
-		CqnSelect select = Select.from(MediaStore_.CDS_NAME).where(m -> 
+		CqnSelect select = Select.from(MediaStore_.class).where(m -> 
 			m.get(MediaStore.CONTENT).isNotNull()
 			.and(m.get(MediaStore.URL).isNull())
 			.and(m.get(MediaStore.STATUS).in(statusList))
@@ -57,12 +57,12 @@ public class MediaStoreRepositoryImpl implements MediaStoreRepository {
 	}
 
 	public void updateMediaStatus(String id, MediaStatus status) {
-		CqnUpdate update = Update.entity(MediaStore_.CDS_NAME).data(MediaStore.STATUS, status.name()).byId(id);
+		CqnUpdate update = Update.entity(MediaStore_.class).data(MediaStore.STATUS, status.name()).byId(id);
         Result result = db.run(update);
 	}
 
 	public void deleteByDirectoryNameAndDirectoryId(Integer directoryId, MediaDirectory directoryName) {
-		CqnDelete delete = Delete.from(MediaStore_.CDS_NAME).where(m -> 
+		CqnDelete delete = Delete.from(MediaStore_.class).where(m -> 
 			m.get(MediaStore.DIRECTORY_NAME).eq(directoryName.name())
 			.and(m.get(MediaStore.DIRECTORY_ID).eq(directoryId))
 		);
