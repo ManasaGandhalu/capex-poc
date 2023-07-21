@@ -35,7 +35,8 @@ entity CER : cuid, db.fingerprints {
     CostCenter      :String(50);
     CerLocation     : String(50);
     BudgetaryTotalCost  : Double default 0.0;
-    virtual AgainstBudgetaryTotalCost : Double default 0.0   
+    virtual AgainstBudgetaryTotalCost : Double default 0.0;
+    virtual AgainstBudgetaryCount: Int64;
 }
 
 entity CERLineItem : cuid, db.fingerprints {
@@ -107,4 +108,9 @@ entity ApprovalQueryRecipients: cuid, db.fingerprints {
 type ApprovalQueryStatistics {
     TotalQueries: Int64 default 0;
     TotalAttachments: Integer default 0;
+}
+
+type AgainstBudgetaryStatistics {
+    AgainstBudgetaryCount: Int64 default 0;
+    AgainstBudgetaryTotalCost: Double default 0.0;
 }

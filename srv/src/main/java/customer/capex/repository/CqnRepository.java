@@ -1,8 +1,8 @@
 package customer.capex.repository;
 
 import java.util.List;
-import java.util.UUID;
 
+import cds.gen.capex.AgainstBudgetaryStatistics;
 import cds.gen.capex.ApprovalQuery;
 import cds.gen.capex.ApprovalQueryStatistics;
 import cds.gen.capex.CERApproval;
@@ -21,7 +21,7 @@ public interface CqnRepository {
 
     public void updateCER(Cer view);
 
-    public Double getAgainstBudgetaryTotalCost(String cerId);
+    public AgainstBudgetaryStatistics getAgainstBudgetaryStatistics(String cerId);
 
     public ApprovalQueryStatistics getApprovalQueryStatistics(String cerApprovalId);
 

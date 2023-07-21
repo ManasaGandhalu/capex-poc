@@ -15,6 +15,7 @@ import cds.gen.adminservice.ApprovalQuery;
 import cds.gen.adminservice.CERApproval;
 import cds.gen.adminservice.CERLineItem;
 import cds.gen.adminservice.Cer;
+import cds.gen.capex.AgainstBudgetaryStatistics;
 import cds.gen.capex.ApprovalQueryStatistics;
 import cds.gen.capex.MasterTAT;
 import cds.gen.capex.MasterTATLevel;
@@ -98,8 +99,9 @@ public class CERService {
 
     public void afterReadCER(List<Cer> list, CdsReadEventContext context) {
         list.stream().forEach(view -> {
-            Double totalAgainstBudgetaryCost = cqnRepository.getAgainstBudgetaryTotalCost(view.getId());
-            view.setAgainstBudgetaryTotalCost(totalAgainstBudgetaryCost);
+            AgainstBudgetaryStatistics stats = cqnRepository.getAgainstBudgetaryStatistics(view.getId());
+            view.setAgainstBudgetaryCount(stats.getAgainstBudgetaryCount() != null ? stats.getAgainstBudgetaryCount() : 0);
+            view.setAgainstBudgetaryTotalCost(stats.getAgainstBudgetaryTotalCost() != null ? stats.getAgainstBudgetaryTotalCost() : 0);
         });
     }
 
@@ -123,6 +125,8 @@ public class CERService {
                 currentTATLevel = nextApproval.getLevel();
                 currentTATUserEmail = nextApproval.getTATUserEmail();
                 status = StatusEnum.PENDING.status();
+                nextApproval.setStatus(status);
+                cqnRepository.updateCERApproval(nextApproval);
             }
         }
         cqnRepository.updateCERApprovalDetails(cerApproval.getCerId(), StatusEnum.getEnum(status).code(), currentTATLevel, currentTATUserEmail);

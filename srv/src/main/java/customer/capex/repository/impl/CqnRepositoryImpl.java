@@ -18,6 +18,7 @@ import com.sap.cds.ql.cqn.CqnUpdate;
 import com.sap.cds.ql.cqn.CqnUpsert;
 import com.sap.cds.services.persistence.PersistenceService;
 
+import cds.gen.capex.AgainstBudgetaryStatistics;
 import cds.gen.capex.ApprovalQuery;
 import cds.gen.capex.ApprovalQueryStatistics;
 import cds.gen.capex.ApprovalQuery_;
@@ -70,15 +71,18 @@ public class CqnRepositoryImpl implements CqnRepository {
     }
 
     @Override
-    public Double getAgainstBudgetaryTotalCost(String cerId) {
+    public AgainstBudgetaryStatistics getAgainstBudgetaryStatistics(String cerId) {
         CqnSelect select = Select.from(Cer_.class)
             .where(c -> c.ParentCER_ID().eq(cerId))
-            .columns(c -> CQL.sum(c.BudgetaryTotalCost()).as(Cer.AGAINST_BUDGETARY_TOTAL_COST));
+            .columns(
+                c -> CQL.count(c.ID()).as(AgainstBudgetaryStatistics.AGAINST_BUDGETARY_COUNT),
+                c -> CQL.sum(c.BudgetaryTotalCost()).as(AgainstBudgetaryStatistics.AGAINST_BUDGETARY_TOTAL_COST)
+            );
         Result result = db.run(select);
         if(result.rowCount() == 0) {
-            return 0.0d;
+            return AgainstBudgetaryStatistics.create();
         }
-        return (Double) result.first().get().get(Cer.AGAINST_BUDGETARY_TOTAL_COST);
+        return result.single(AgainstBudgetaryStatistics.class);
     }
 
     @Override
