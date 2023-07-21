@@ -61,3 +61,13 @@ entity MasterTATLevel : db.fingerprints {
     Level: Integer;
     TATDurationMinutes: Integer;
 }
+
+entity MasterCostCenter : db.fingerprints{
+    key ID :  Integer;
+    CostCenter :  String(30);
+}
+
+entity MasterProfitCenter : db.fingerprints{
+    key ID :  Integer;
+    ProfitCenter :  String(30);
+}

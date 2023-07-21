@@ -12,6 +12,8 @@ service AdminService {
     entity MasterTATLevel as projection on db.MasterTATLevel;
     entity MasterRecurringExpense as projection on db.MasterRecurringExpense;
     entity MediaStore as projection on db.MediaStore;
+    entity MasterCostCenter as projection on db.MasterCostCenter;
+    entity MasterProfitCenter as projection on db.MasterProfitCenter;
     entity Employee as projection on db.Employee;
     entity CER as projection on db.CER;
     entity CERApproval as projection on db.CERApproval {
