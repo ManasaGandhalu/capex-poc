@@ -31,6 +31,6 @@ public interface CqnRepository {
 
     public CERApproval findCERApprovalByCerIdandLevel(String cerId, int level);
 
-    public void updateCERStatusIdAndTATLevel(String cerId, int statusId, Integer currentTATLevel);
+    public void updateCERApprovalDetails(String cerId, int statusId, Integer currentTATLevel, String currentTATUserEmail);
 
 }

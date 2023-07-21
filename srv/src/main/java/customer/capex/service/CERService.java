@@ -23,6 +23,7 @@ import customer.capex.enums.StatusEnum;
 import customer.capex.repository.CqnRepository;
 import customer.capex.service.document_management.enums.MediaDirectory;
 import customer.capex.service.document_management.models.Media;
+import customer.capex.utils.Utility;
 
 @Service
 public class CERService {
@@ -78,7 +79,9 @@ public class CERService {
                 CERApproval currentApproval = approvals.get(0);
                 currentApproval.setStatus(StatusEnum.PENDING.status()); 
                 view.setCurrentTATLevel(currentApproval.getLevel());
+                view.setTATUserEmail(currentApproval.getTATUserEmail());
             }
+            view.setCERCode(Utility.generateToken(8, false));
             view.setCERApprovals(approvals);
             view.setTotalTATLevels(tatLevels.size());
             view.setStatusId(StatusEnum.PENDING.code());
@@ -112,15 +115,17 @@ public class CERService {
         cds.gen.capex.CERApproval cerApproval = cqnRepository.findCERApproval(cerApprovalId);
         cerApproval.setStatus(status);
         cqnRepository.updateCERApproval(cerApproval);
+        String currentTATUserEmail = cerApproval.getTATUserEmail();
         Integer currentTATLevel = cerApproval.getLevel();
         if(StatusEnum.APPROVED.status().equals(status)) {
             cds.gen.capex.CERApproval nextApproval = cqnRepository.findCERApprovalByCerIdandLevel(cerApproval.getCerId(), currentTATLevel + 1);
             if(nextApproval != null) {
                 currentTATLevel = nextApproval.getLevel();
+                currentTATUserEmail = nextApproval.getTATUserEmail();
                 status = StatusEnum.PENDING.status();
             }
         }
-        cqnRepository.updateCERStatusIdAndTATLevel(cerApproval.getCerId(), StatusEnum.getEnum(status).code(), currentTATLevel);
+        cqnRepository.updateCERApprovalDetails(cerApproval.getCerId(), StatusEnum.getEnum(status).code(), currentTATLevel, currentTATUserEmail);
         return Struct.access(cerApproval).as(CERApproval.class);
     }
 

@@ -121,10 +121,11 @@ public class CqnRepositoryImpl implements CqnRepository {
     }
 
     @Override
-    public void updateCERStatusIdAndTATLevel(String cerId, int statusId, Integer currentTATLevel) {
+    public void updateCERApprovalDetails(String cerId, int statusId, Integer currentTATLevel, String currentTATUserEmail) {
         Map<String, Object> map = new HashMap<>();
         map.put(Cer.STATUS_ID, statusId);
         map.put(Cer.CURRENT_TATLEVEL, currentTATLevel);
+        map.put(Cer.TATUSER_EMAIL, currentTATUserEmail);
         CqnUpdate update = Update.entity(Cer_.class)
             .data(map)
             .byId(cerId);
