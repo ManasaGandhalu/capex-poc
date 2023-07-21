@@ -4,9 +4,9 @@ using { Currency, cuid, managed, sap.common.CodeList } from '@sap/cds/common';
 using { capex as db} from '../schema';
 
 entity CER : cuid, db.fingerprints {
-    CERType         : Association to db.MasterCERType;
-    Status          : Association to db.MasterStatus ; 
-    CurrentStage    : Association to db.MasterStage;  
+    CERType         : Association to db.MasterCERType on $self.CERType_ID = CERType.ID; 
+    Status          : Association to db.MasterStatus on $self.Status_ID = Status.ID; 
+    CurrentStage    : Association to db.MasterStage on $self.CurrentStage_ID = CurrentStage.ID; 
     ParentCER       : Association to CER;  
     CERLineItems     : Composition of many CERLineItem on $self.ID = CERLineItems.CER_ID;
     CERApprovals     :  Composition of many CERApproval on $self.ID = CERApprovals.CER_ID;
@@ -14,6 +14,9 @@ entity CER : cuid, db.fingerprints {
     TATUser: Association to capex.Employee on upper(TATUser.Email) = upper($self.TATUserEmail);
     TotalTATLevels :  Integer;
     CurrentTATLevel: Integer;
+    CERType_ID: Integer;
+    Status_ID: Integer;
+    CurrentStage_ID: Integer;
     WorkflowRequestId : String(50);  
     TATUserEmail         : String(300);
     CERCode   : String;

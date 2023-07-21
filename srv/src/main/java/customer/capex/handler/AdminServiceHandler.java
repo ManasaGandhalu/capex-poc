@@ -23,6 +23,7 @@ import cds.gen.adminservice.CERApproval;
 import cds.gen.adminservice.CERApproval_;
 import cds.gen.adminservice.Cer;
 import cds.gen.adminservice.Cer_;
+import cds.gen.adminservice.UpdateApprovalStatusContext;
 // import cds.gen.adminservice.UpdateApprovalStatusContext;
 import customer.capex.service.CERService;
 
@@ -67,15 +68,16 @@ public class AdminServiceHandler implements EventHandler {
         cerService.afterReadCERApproval(list, context);
     }
 
-    // /**
-    //  * On Event Handlers
-    //  */
-    // @On(event = CqnService.EVENT_CREATE)
-    // void onUpdateApprovalStatus(UpdateApprovalStatusContext context) {
-    //     String cerApprovalId = context.getCerApprovalId();
-    //     String status = context.getStatus();
-    //     cerService.onUpdateApprovalStatus(cerApprovalId, status);
-    //     context.setCompleted();
-    // }
+    /**
+     * On Event Handlers
+     */
+    @On(event = UpdateApprovalStatusContext.CDS_NAME)
+    void onUpdateApprovalStatus(UpdateApprovalStatusContext context) {
+        String cerApprovalId = context.getCerApprovalId();
+        String status = context.getStatus();
+        CERApproval approval = cerService.onUpdateApprovalStatus(cerApprovalId, status);
+        context.setCompleted();
+        context.setResult(approval);
+    }
 
 }
