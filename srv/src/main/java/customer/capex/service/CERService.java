@@ -92,8 +92,13 @@ public class CERService {
                 totalBudgetaryCost += item.getGrossCost();
             }
             view.setBudgetaryTotalCost(totalBudgetaryCost);
+            uploadCERAttachment(view, context);
             cds.gen.capex.Cer cer = Struct.access(view).as(cds.gen.capex.Cer.class);
+
             cqnRepository.updateCER(cer);
+
+            
+
         }
     }
 
@@ -133,4 +138,12 @@ public class CERService {
         return Struct.access(cerApproval).as(CERApproval.class);
     }
 
+    public void uploadCERAttachment(Cer view, CdsCreateEventContext context) {
+        Media media = new Media();
+        media.setName(view.getAttachmentName());
+        media.setContentType(view.getAttachmentType());
+        media.setBytes(view.getAttachment());
+        MediaStore mediaStore = mediaStoreService.upload(MediaDirectory.CER_ATTACHMENT, view.getId(), media);
+        view.setMediaStoreId(mediaStore.getId());
+    }
 }

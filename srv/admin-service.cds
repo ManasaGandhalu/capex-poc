@@ -15,7 +15,7 @@ service AdminService {
     entity MasterCostCenter as projection on db.MasterCostCenter;
     entity MasterProfitCenter as projection on db.MasterProfitCenter;
     entity Employee as projection on db.Employee;
-    entity CER as projection on db.CER;
+    // entity CER as projection on db.CER;
     entity CERApproval as projection on db.CERApproval {
         *,
         virtual 0 as TotalQueries: Int64,
@@ -23,6 +23,19 @@ service AdminService {
     };
     
     entity ApprovalQuery as projection on db.ApprovalQuery {
+        *,
+
+        @Core.Computed: false
+        virtual null as Attachment: LargeBinary,
+
+        @Core.Computed: false
+        virtual null as AttachmentName : String,
+        
+        @Core.Computed: false
+        virtual null as AttachmentType: String
+    };
+
+    entity CER as projection on db.CER {
         *,
 
         @Core.Computed: false
