@@ -1,4 +1,4 @@
-package customer.capex.service.document_management.models;
+package customer.capex.service.sap_document_management.models;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

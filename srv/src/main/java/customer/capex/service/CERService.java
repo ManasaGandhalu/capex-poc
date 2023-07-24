@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.sap.cds.Struct;
@@ -22,8 +23,13 @@ import cds.gen.capex.MasterTATLevel;
 import cds.gen.capex.MediaStore;
 import customer.capex.enums.StatusEnum;
 import customer.capex.repository.CqnRepository;
-import customer.capex.service.document_management.enums.MediaDirectory;
-import customer.capex.service.document_management.models.Media;
+import customer.capex.service.sap_document_management.enums.MediaDirectory;
+import customer.capex.service.sap_document_management.models.Media;
+import customer.capex.service.sap_workflow_management.WorkflowManagementAPI;
+import customer.capex.service.sap_workflow_management.contexts.ApprovalContext;
+import customer.capex.service.sap_workflow_management.enums.WorkflowDefinition;
+import customer.capex.service.sap_workflow_management.models.WorkflowRequest;
+import customer.capex.service.sap_workflow_management.models.WorkflowInstance;
 import customer.capex.utils.Utility;
 
 @Service
@@ -34,6 +40,9 @@ public class CERService {
 
     @Autowired
     CqnRepository cqnRepository;
+
+    @Autowired
+    WorkflowManagementAPI workflowAPI;
 
     public void afterCreateApprovalQuery(ApprovalQuery view, CdsCreateEventContext context) {
         Media media = new Media();
@@ -86,7 +95,8 @@ public class CERService {
             view.setCERApprovals(approvals);
             view.setTotalTATLevels(tatLevels.size());
             view.setStatusId(StatusEnum.PENDING.code());
-            view.setWorkflowRequestId("WF123");
+            String workflowRequestId = triggerApprovalWorkflow(view);
+            view.setWorkflowRequestId(workflowRequestId);
             double totalBudgetaryCost = 0d;
             for(CERLineItem item: view.getCERLineItems()) {
                 totalBudgetaryCost += item.getGrossCost();
@@ -131,6 +141,25 @@ public class CERService {
         }
         cqnRepository.updateCERApprovalDetails(cerApproval.getCerId(), StatusEnum.getEnum(status).code(), currentTATLevel, currentTATUserEmail);
         return Struct.access(cerApproval).as(CERApproval.class);
+    }
+
+    public String triggerApprovalWorkflow(Cer cer) {
+        WorkflowRequest<ApprovalContext> workflowRequest = new WorkflowRequest<>();
+        ApprovalContext context = new ApprovalContext();
+        context.setCerId(cer.getId());
+        workflowRequest.setDefinitionId(WorkflowDefinition.approval.definitionId());
+        workflowRequest.setContext(context);
+
+        WorkflowInstance workflowInstance = null;
+        // trigger workflow request
+        ResponseEntity<WorkflowInstance> response = workflowAPI.initiate(workflowRequest);
+        if(response.getStatusCode().is2xxSuccessful()) {
+            workflowInstance = response.getBody();
+        }
+        if(workflowInstance != null) {
+            return workflowInstance.getId();
+        }
+        return null;
     }
 
 }

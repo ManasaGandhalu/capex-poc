@@ -1,4 +1,4 @@
-package customer.capex.service.document_management.config;
+package customer.capex.service.sap_document_management.config;
 
 import org.apache.chemistry.opencmis.client.api.SessionFactory;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;

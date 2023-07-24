@@ -1,4 +1,4 @@
-package customer.capex.service.xsuaa;
+package customer.capex.service.sap_xsuaa;
 
 import java.util.Optional;
 

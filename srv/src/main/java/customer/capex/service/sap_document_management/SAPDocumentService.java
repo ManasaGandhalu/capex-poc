@@ -1,4 +1,4 @@
-package customer.capex.service.document_management;
+package customer.capex.service.sap_document_management;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -21,10 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import customer.capex.service.document_management.config.CMISSessionHelper;
-import customer.capex.service.document_management.enums.MediaDirectory;
-import customer.capex.service.document_management.models.Media;
-import customer.capex.service.document_management.models.MediaResponse;
+import customer.capex.service.sap_document_management.config.CMISSessionHelper;
+import customer.capex.service.sap_document_management.enums.MediaDirectory;
+import customer.capex.service.sap_document_management.models.Media;
+import customer.capex.service.sap_document_management.models.MediaResponse;
 
 @Service
 public class SAPDocumentService {

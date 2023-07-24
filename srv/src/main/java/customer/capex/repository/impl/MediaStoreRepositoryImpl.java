@@ -22,8 +22,8 @@ import com.sap.cds.services.persistence.PersistenceService;
 import cds.gen.capex.MediaStore;
 import cds.gen.capex.MediaStore_;
 import customer.capex.repository.MediaStoreRepository;
-import customer.capex.service.document_management.enums.MediaDirectory;
-import customer.capex.service.document_management.enums.MediaStatus;
+import customer.capex.service.sap_document_management.enums.MediaDirectory;
+import customer.capex.service.sap_document_management.enums.MediaStatus;
 
 @Repository
 public class MediaStoreRepositoryImpl implements MediaStoreRepository {

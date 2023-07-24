@@ -1,4 +1,4 @@
-package customer.capex.service.document_management.config;
+package customer.capex.service.sap_document_management.config;
 
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -22,7 +22,7 @@ import com.sap.cloud.security.xsuaa.client.OAuth2TokenResponse;
 import com.sap.cloud.security.xsuaa.tokenflows.TokenFlowException;
 import com.sap.cloud.security.xsuaa.tokenflows.XsuaaTokenFlows;
 
-import customer.capex.service.xsuaa.XSUAATokenService;
+import customer.capex.service.sap_xsuaa.XSUAATokenService;
 
 @Configuration
 public class CMISSessionHelper {

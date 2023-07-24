@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 
 import cds.gen.capex.MediaStore;
 import customer.capex.repository.MediaStoreRepository;
-import customer.capex.service.document_management.SAPDocumentService;
-import customer.capex.service.document_management.enums.MediaDirectory;
-import customer.capex.service.document_management.enums.MediaStatus;
-import customer.capex.service.document_management.models.Media;
-import customer.capex.service.document_management.models.MediaResponse;
+import customer.capex.service.sap_document_management.SAPDocumentService;
+import customer.capex.service.sap_document_management.enums.MediaDirectory;
+import customer.capex.service.sap_document_management.enums.MediaStatus;
+import customer.capex.service.sap_document_management.models.Media;
+import customer.capex.service.sap_document_management.models.MediaResponse;
 
 @Service
 public class MediaStoreService {
