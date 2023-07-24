@@ -23,6 +23,7 @@ import cds.gen.adminservice.CERApproval;
 import cds.gen.adminservice.CERApproval_;
 import cds.gen.adminservice.Cer;
 import cds.gen.adminservice.Cer_;
+import cds.gen.adminservice.ChangeApprovalStatusByWorkflowContext;
 import cds.gen.adminservice.UpdateApprovalStatusContext;
 // import cds.gen.adminservice.UpdateApprovalStatusContext;
 import customer.capex.service.CERService;
@@ -76,6 +77,15 @@ public class AdminServiceHandler implements EventHandler {
         String cerApprovalId = context.getCerApprovalId();
         String status = context.getStatus();
         CERApproval approval = cerService.onUpdateApprovalStatus(cerApprovalId, status);
+        context.setCompleted();
+        context.setResult(approval);
+    }
+
+    @On(event = ChangeApprovalStatusByWorkflowContext.CDS_NAME)
+    void onChangeApprovalStatusByWorkflow(ChangeApprovalStatusByWorkflowContext context) {
+        String cerApprovalId = context.getCerApprovalId();
+        String status = context.getStatus();
+        CERApproval approval = cerService.onChangeApprovalStatusByWorkflow(cerApprovalId, status);
         context.setCompleted();
         context.setResult(approval);
     }

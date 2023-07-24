@@ -23,9 +23,12 @@ import com.sap.cloud.security.xsuaa.client.OAuth2TokenResponse;
 import com.sap.cloud.security.xsuaa.tokenflows.TokenFlowException;
 import com.sap.cloud.security.xsuaa.tokenflows.XsuaaTokenFlows;
 
+import customer.capex.service.sap_workflow_management.enums.WorkflowStatus;
+import customer.capex.service.sap_workflow_management.models.CancelWorkflowInstance;
 import customer.capex.service.sap_workflow_management.models.DeleteWorkflowInstance;
 import customer.capex.service.sap_workflow_management.models.WorkflowInstance;
 import customer.capex.service.sap_workflow_management.models.WorkflowRequest;
+import customer.capex.service.sap_workflow_management.models.WorkflowUserTask;
 import customer.capex.service.sap_xsuaa.XSUAATokenService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +43,7 @@ public class WorkflowManagementAPI {
 	private String apiUrl;
 
 	@Value("${sap_workflow_management.usertask_url:}")
-	private String usertask;
+	private String usertaskUrl;
 
 	@Value("${sap_workflow_management.client_id:}")
 	private String clientId;
@@ -154,5 +157,65 @@ public class WorkflowManagementAPI {
 		}
 		return tokenResponse;
 	}
+
+	public WorkflowInstance getActiveUserTask(String workflowDefinitionId, String workflowInstanceId) {
+		String url = usertaskUrl + "?" + "workflowDefinitionId=" + workflowDefinitionId + "&"
+		+ "workflowInstanceIdworkflowDefinitionId=" + workflowInstanceId + "&" + "status=READY";
+		
+		OAuth2TokenResponse xsuaaToken = getAccessToken();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(xsuaaToken.getAccessToken());
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+		log.info("getActiveUserTask: {}, Status: {}", url, response.getStatusCode());
+		if(response.hasBody()) {
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				JavaTimeModule javaTimeModule = new JavaTimeModule();
+				mapper.registerModule(javaTimeModule);
+				mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+				mapper.configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false);
+				List<WorkflowInstance> instances = mapper.readValue(response.getBody(), new TypeReference<List<WorkflowInstance>>(){});
+				if(instances != null && !instances.isEmpty()) {
+					return instances.get(0);
+				}
+			} catch (JsonProcessingException e) {
+				log.error("ERROR", e);
+			}
+		}
+
+		return null;
+	}
+
+	public ResponseEntity<String> cancelWorkflowInstance(String workflowInstanceId) {
+		String url = apiUrl+"/"+workflowInstanceId;
+		
+		OAuth2TokenResponse xsuaaToken = getAccessToken();
+		CancelWorkflowInstance instance = new CancelWorkflowInstance(true);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(xsuaaToken.getAccessToken());
+		HttpEntity<?> entity = new HttpEntity<>(instance, headers);
+
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);
+		return response;
+	}
+
+	public ResponseEntity<String> patchUserTask(String userTaskId, WorkflowUserTask instance) {
+		String url = usertaskUrl + "/" + userTaskId;
+		
+		OAuth2TokenResponse xsuaaToken = getAccessToken();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(xsuaaToken.getAccessToken());
+		HttpEntity<?> entity = new HttpEntity<>(instance, headers);
+
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);
+		return response;
+	}
+
 
 }

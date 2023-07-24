@@ -38,5 +38,7 @@ service AdminService {
     entity ApprovalQueryRecipients as projection on db.ApprovalQueryRecipients;
 
     function UpdateApprovalStatus(CerApprovalId: UUID, Status: String) returns CERApproval;
+
+    function ChangeApprovalStatusByWorkflow(CerApprovalId: UUID, Status: String) returns CERApproval;
     
 }

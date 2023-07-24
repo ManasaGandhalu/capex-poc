@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import com.sap.cds.Struct;
 import com.sap.cds.services.cds.CdsCreateEventContext;
@@ -28,8 +29,10 @@ import customer.capex.service.sap_document_management.models.Media;
 import customer.capex.service.sap_workflow_management.WorkflowManagementAPI;
 import customer.capex.service.sap_workflow_management.contexts.ApprovalContext;
 import customer.capex.service.sap_workflow_management.enums.WorkflowDefinition;
-import customer.capex.service.sap_workflow_management.models.WorkflowRequest;
+import customer.capex.service.sap_workflow_management.enums.WorkflowStatus;
 import customer.capex.service.sap_workflow_management.models.WorkflowInstance;
+import customer.capex.service.sap_workflow_management.models.WorkflowRequest;
+import customer.capex.service.sap_workflow_management.models.WorkflowUserTask;
 import customer.capex.utils.Utility;
 
 @Service
@@ -125,22 +128,22 @@ public class CERService {
 
     public CERApproval onUpdateApprovalStatus(String cerApprovalId, String status) {
         cds.gen.capex.CERApproval cerApproval = cqnRepository.findCERApproval(cerApprovalId);
-        cerApproval.setStatus(status);
-        cqnRepository.updateCERApproval(cerApproval);
-        String currentTATUserEmail = cerApproval.getTATUserEmail();
-        Integer currentTATLevel = cerApproval.getLevel();
-        if(StatusEnum.APPROVED.status().equals(status)) {
-            cds.gen.capex.CERApproval nextApproval = cqnRepository.findCERApprovalByCerIdandLevel(cerApproval.getCerId(), currentTATLevel + 1);
-            if(nextApproval != null) {
-                currentTATLevel = nextApproval.getLevel();
-                currentTATUserEmail = nextApproval.getTATUserEmail();
-                status = StatusEnum.PENDING.status();
-                nextApproval.setStatus(status);
-                cqnRepository.updateCERApproval(nextApproval);
-            }
+        Assert.notNull(cerApproval, "Approval object not found.");
+        String workflowInstanceId = cqnRepository.findWorkflowRequestIdByCerId(cerApproval.getCerId());
+        if(workflowInstanceId != null) {
+            StatusEnum approvalStatus = StatusEnum.getEnum(status);
+            WorkflowInstance instance = workflowAPI.getActiveUserTask(WorkflowDefinition.approval.definitionId(), workflowInstanceId);
+            String userTaskId = instance.getId();
+            
+            WorkflowUserTask workflowUserTask = new WorkflowUserTask();
+            workflowUserTask.setStatus(WorkflowStatus.READY);
+            workflowUserTask.setDecision(approvalStatus.name());
+            
+            workflowAPI.patchUserTask(userTaskId, workflowUserTask);
+            return Struct.access(cerApproval).as(CERApproval.class);
+        } else {
+            return onChangeApprovalStatusByWorkflow(cerApprovalId, status);
         }
-        cqnRepository.updateCERApprovalDetails(cerApproval.getCerId(), StatusEnum.getEnum(status).code(), currentTATLevel, currentTATUserEmail);
-        return Struct.access(cerApproval).as(CERApproval.class);
     }
 
     public String triggerApprovalWorkflow(Cer cer) {
@@ -160,6 +163,26 @@ public class CERService {
             return workflowInstance.getId();
         }
         return null;
+    }
+
+    public CERApproval onChangeApprovalStatusByWorkflow(String cerApprovalId, String status) {
+        cds.gen.capex.CERApproval cerApproval = cqnRepository.findCERApproval(cerApprovalId);
+        cerApproval.setStatus(status);
+        cqnRepository.updateCERApproval(cerApproval);
+        String currentTATUserEmail = cerApproval.getTATUserEmail();
+        Integer currentTATLevel = cerApproval.getLevel();
+        if(StatusEnum.APPROVED.status().equals(status)) {
+            cds.gen.capex.CERApproval nextApproval = cqnRepository.findCERApprovalByCerIdandLevel(cerApproval.getCerId(), currentTATLevel + 1);
+            if(nextApproval != null) {
+                currentTATLevel = nextApproval.getLevel();
+                currentTATUserEmail = nextApproval.getTATUserEmail();
+                status = StatusEnum.PENDING.status();
+                nextApproval.setStatus(status);
+                cqnRepository.updateCERApproval(nextApproval);
+            }
+        }
+        cqnRepository.updateCERApprovalDetails(cerApproval.getCerId(), StatusEnum.getEnum(status).code(), currentTATLevel, currentTATUserEmail);
+        return Struct.access(cerApproval).as(CERApproval.class);
     }
 
 }
