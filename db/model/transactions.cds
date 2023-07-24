@@ -35,6 +35,7 @@ entity CER : cuid, db.fingerprints {
     CostCenter      :String(50);
     CerLocation     : String(50);
     BudgetaryTotalCost  : Double default 0.0;
+    MediaStoreId   : UUID;
     virtual AgainstBudgetaryTotalCost : Double default 0.0;
     virtual AgainstBudgetaryCount: Int64;
 }
