@@ -48,26 +48,28 @@ public class CERService {
     WorkflowManagementAPI workflowAPI;
 
     public void afterCreateApprovalQuery(ApprovalQuery view, CdsCreateEventContext context) {
-        Media media = new Media();
-        media.setName(view.getAttachmentName());
-        media.setContentType(view.getAttachmentType());
-        media.setBytes(view.getAttachment());
-        MediaStore mediaStore = mediaStoreService.upload(MediaDirectory.APPROVAL_QUERY, view.getId(), media);
-        view.setMediaStoreId(mediaStore.getId());
-        cqnRepository.saveApprovalQueryMediaStoreId(view.getId(), mediaStore.getId());
+        if(view.getAttachmentName() != null){
+            Media media = new Media();
+            media.setName(view.getAttachmentName());
+            media.setContentType(view.getAttachmentType());
+            media.setBytes(view.getAttachment());
+            MediaStore mediaStore = mediaStoreService.upload(MediaDirectory.APPROVAL_QUERY, view.getId(), media);
+            if(mediaStore != null){
+                view.setMediaStoreId(mediaStore.getId());
+                cqnRepository.saveApprovalQueryMediaStoreId(view.getId(), mediaStore.getId());
+            }
+        }
     }
 
     public void afterReadApprovalQuery(List<ApprovalQuery> list, CdsReadEventContext context) {
         if(list.size() == 1) {
             ApprovalQuery view = list.get(0);
-            Media media = new Media();
-            media.setName(view.getAttachmentName());
-            media.setContentType(view.getAttachmentType());
-            media.setBytes(view.getAttachment());
             MediaStore mediaStore = mediaStoreService.download(MediaDirectory.APPROVAL_QUERY, view.getId());
-            view.setAttachment(mediaStore.getContent());
-            view.setAttachmentName(mediaStore.getMediaName());
-            view.setAttachmentType(mediaStore.getContentType());
+            if(mediaStore != null){
+                view.setAttachment(mediaStore.getContent());
+                view.setAttachmentName(mediaStore.getMediaName());
+                view.setAttachmentType(mediaStore.getContentType());
+            }
         }
     }
 
@@ -191,11 +193,16 @@ public class CERService {
     }
 
     public void uploadCERAttachment(Cer view, CdsCreateEventContext context) {
-        Media media = new Media();
-        media.setName(view.getAttachmentName());
-        media.setContentType(view.getAttachmentType());
-        media.setBytes(view.getAttachment());
-        MediaStore mediaStore = mediaStoreService.upload(MediaDirectory.CER_ATTACHMENT, view.getId(), media);
-        view.setMediaStoreId(mediaStore.getId());
+       
+        if(view.getAttachmentName() != null){
+            Media media = new Media();
+            media.setName(view.getAttachmentName());
+            media.setContentType(view.getAttachmentType());
+            media.setBytes(view.getAttachment());
+            MediaStore mediaStore = mediaStoreService.upload(MediaDirectory.CER_ATTACHMENT, view.getId(), media);
+            if(mediaStore != null){
+                view.setMediaStoreId(mediaStore.getId());
+            }
+        }
     }
 }
