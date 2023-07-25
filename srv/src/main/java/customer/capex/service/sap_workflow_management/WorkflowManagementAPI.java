@@ -51,6 +51,8 @@ public class WorkflowManagementAPI {
 	@Value("${sap_workflow_management.client_secret:}")
 	private String clientSecret;
 
+	private static final String TOKEN_ENDPOINT = "/oauth/token";
+
 	@Autowired
 	RestTemplate restTemplate;
 
@@ -61,7 +63,7 @@ public class WorkflowManagementAPI {
 		if (workflowRequest == null) {
 			return null;
 		}
-		OAuth2TokenResponse xsuaaToken = getAccessToken();
+		OAuth2TokenResponse xsuaaToken = getXsuaaToken();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.setBearerAuth(xsuaaToken.getAccessToken());
@@ -80,7 +82,7 @@ public class WorkflowManagementAPI {
 			instances.add(wfInstance);
 		});
 		
-		OAuth2TokenResponse xsuaaToken = getAccessToken();
+		OAuth2TokenResponse xsuaaToken = getXsuaaToken();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.setBearerAuth(xsuaaToken.getAccessToken());
@@ -115,7 +117,7 @@ public class WorkflowManagementAPI {
     	if (statuses == null || statuses.isEmpty()) {
 			return instances;
 		}
-        OAuth2TokenResponse xsuaaToken = getAccessToken();
+        OAuth2TokenResponse xsuaaToken = getXsuaaToken();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.setBearerAuth(xsuaaToken.getAccessToken());
@@ -145,9 +147,9 @@ public class WorkflowManagementAPI {
         return instances;
 	}
 
-	private OAuth2TokenResponse getAccessToken() {
+	private OAuth2TokenResponse getXsuaaToken() {
 		OAuth2TokenResponse tokenResponse = null;
-		XsuaaTokenFlows tokenFlows = xsuaaTokenService.tokenFlows(authUrl, clientId, clientSecret).get();
+		XsuaaTokenFlows tokenFlows = xsuaaTokenService.tokenFlows(authUrl + TOKEN_ENDPOINT, clientId, clientSecret).get();
 		if (tokenFlows != null) {
 			try {
 				tokenResponse = tokenFlows.clientCredentialsTokenFlow().execute();
@@ -162,7 +164,7 @@ public class WorkflowManagementAPI {
 		String url = usertaskUrl + "?" + "workflowDefinitionId=" + workflowDefinitionId + "&"
 		+ "workflowInstanceIdworkflowDefinitionId=" + workflowInstanceId + "&" + "status=READY";
 		
-		OAuth2TokenResponse xsuaaToken = getAccessToken();
+		OAuth2TokenResponse xsuaaToken = getXsuaaToken();
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -193,7 +195,7 @@ public class WorkflowManagementAPI {
 	public ResponseEntity<String> cancelWorkflowInstance(String workflowInstanceId) {
 		String url = apiUrl+"/"+workflowInstanceId;
 		
-		OAuth2TokenResponse xsuaaToken = getAccessToken();
+		OAuth2TokenResponse xsuaaToken = getXsuaaToken();
 		CancelWorkflowInstance instance = new CancelWorkflowInstance(true);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -207,7 +209,7 @@ public class WorkflowManagementAPI {
 	public ResponseEntity<String> patchUserTask(String userTaskId, WorkflowUserTask instance) {
 		String url = usertaskUrl + "/" + userTaskId;
 		
-		OAuth2TokenResponse xsuaaToken = getAccessToken();
+		OAuth2TokenResponse xsuaaToken = getXsuaaToken();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.setBearerAuth(xsuaaToken.getAccessToken());
