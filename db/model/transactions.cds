@@ -11,7 +11,7 @@ entity CER : cuid, db.fingerprints {
     CERLineItems     : Composition of many CERLineItem on $self.ID = CERLineItems.CER_ID;
     CERApprovals     :  Composition of many CERApproval on $self.ID = CERApprovals.CER_ID;
     CurrentApproval :  Association to CERApproval on $self.ID = CurrentApproval.CER_ID and $self.CurrentTATLevel = CurrentApproval.Level;
-    TATUser: Association to capex.Employee on upper(TATUser.Email) = upper($self.TATUserEmail);
+    TATUser: Association to db.Employee on upper(TATUser.Email) = upper($self.TATUserEmail);
     TotalTATLevels :  Integer;
     CurrentTATLevel: Integer;
     CERType_ID: Integer;
@@ -57,8 +57,8 @@ entity CERLineItem : cuid, db.fingerprints {
 
 entity CERApproval : cuid, db.fingerprints {
     CER_ID: UUID;
-    TATUser: Association to capex.Employee on upper(TATUser.Email) = upper($self.TATUserEmail);
-    TAT: Association to capex.MasterTAT on TAT.ID = $self.TAT_ID;
+    TATUser: Association to db.Employee on upper(TATUser.Email) = upper($self.TATUserEmail);
+    TAT: Association to db.MasterTAT on TAT.ID = $self.TAT_ID;
     TAT_ID: Integer;
     TATUserEmail: String;
     Level: Integer;
@@ -87,7 +87,8 @@ entity Employee :  cuid, db.fingerprints{
 }
 
 entity ApprovalQuery: cuid, db.fingerprints {
-    Recipients: Composition of many ApprovalQueryRecipients on Recipients.ApprovalQueryID = $self.ID;
+    Recipients: Composition of many db.ApprovalQueryRecipients on Recipients.ApprovalQueryID = $self.ID;
+    Sender: Association to db.Employee on upper(Sender.Email) = upper($self.createdBy);
     CERApprovalId: UUID;
     Comment: String;
     MediaStoreId: UUID;
@@ -98,16 +99,6 @@ entity ApprovalQueryRecipients: cuid, db.fingerprints {
     Name: String;
     Email: String(300);
 }
-
-// @cds.persistence.skip
-// entity ApprovalReply: cuid, db.fingerprints {
-//     ApprovalQueryId: UUID;
-//     ApprovalId: Int64;
-//     Comment: String;
-//     Attachment: LargeBinary @Core.MediaType: attachmentType @Core.ContentDisposition.Filename: attachmentName @Core.ContentDisposition.Type: 'attachment';
-//     AttachmentName : String;
-//     AttachmentType: String @Core.IsMediaType;
-// }
 
 type ApprovalQueryStatistics {
     TotalQueries: Int64 default 0;

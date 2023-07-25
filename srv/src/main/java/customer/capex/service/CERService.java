@@ -62,15 +62,16 @@ public class CERService {
     }
 
     public void afterReadApprovalQuery(List<ApprovalQuery> list, CdsReadEventContext context) {
-        if(list.size() == 1) {
-            ApprovalQuery view = list.get(0);
-            MediaStore mediaStore = mediaStoreService.download(MediaDirectory.APPROVAL_QUERY, view.getId());
-            if(mediaStore != null){
-                view.setAttachment(mediaStore.getContent());
-                view.setAttachmentName(mediaStore.getMediaName());
-                view.setAttachmentType(mediaStore.getContentType());
+        list.stream().forEach((ApprovalQuery view) -> {
+            if(view.getMediaStoreId() != null) {
+                MediaStore mediaStore = mediaStoreService.download(MediaDirectory.APPROVAL_QUERY, view.getId());
+                if(mediaStore != null){
+                    view.setAttachment(mediaStore.getContent());
+                    view.setAttachmentName(mediaStore.getMediaName());
+                    view.setAttachmentType(mediaStore.getContentType());
+                }
             }
-        }
+        });
     }
 
     public void afterCreateCER(Cer view, CdsCreateEventContext context) {
@@ -107,7 +108,7 @@ public class CERService {
                 totalBudgetaryCost += item.getGrossCost();
             }
             view.setBudgetaryTotalCost(totalBudgetaryCost);
-            uploadCERAttachment(view, context);
+            uploadCERAttachment(view);
             cds.gen.capex.Cer cer = Struct.access(view).as(cds.gen.capex.Cer.class);
 
             cqnRepository.updateCER(cer);
@@ -123,6 +124,10 @@ public class CERService {
             view.setAgainstBudgetaryCount(stats.getAgainstBudgetaryCount() != null ? stats.getAgainstBudgetaryCount() : 0);
             view.setAgainstBudgetaryTotalCost(stats.getAgainstBudgetaryTotalCost() != null ? stats.getAgainstBudgetaryTotalCost() : 0);
         });
+        if(list.size() == 1) {
+            // download attachment will be done for single CER details 
+            downloadCERAttachment(list.get(0));
+        }
     }
 
     public void afterReadCERApproval(List<CERApproval> list, CdsReadEventContext context) {
@@ -192,8 +197,7 @@ public class CERService {
         return Struct.access(cerApproval).as(CERApproval.class);
     }
 
-    public void uploadCERAttachment(Cer view, CdsCreateEventContext context) {
-       
+    public void uploadCERAttachment(Cer view) {
         if(view.getAttachmentName() != null){
             Media media = new Media();
             media.setName(view.getAttachmentName());
@@ -202,6 +206,17 @@ public class CERService {
             MediaStore mediaStore = mediaStoreService.upload(MediaDirectory.CER_ATTACHMENT, view.getId(), media);
             if(mediaStore != null){
                 view.setMediaStoreId(mediaStore.getId());
+            }
+        }
+    }
+
+    public void downloadCERAttachment(Cer view) {
+        if(view.getMediaStoreId() != null){
+            MediaStore mediaStore = mediaStoreService.download(MediaDirectory.CER_ATTACHMENT, view.getId());
+            if(mediaStore != null){
+                view.setAttachment(mediaStore.getContent());
+                view.setAttachmentName(mediaStore.getMediaName());
+                view.setAttachmentType(mediaStore.getContentType());
             }
         }
     }
