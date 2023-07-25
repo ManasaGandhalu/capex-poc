@@ -145,13 +145,15 @@ public class CERService {
         if(workflowInstanceId != null) {
             StatusEnum approvalStatus = StatusEnum.getEnum(status);
             WorkflowInstance instance = workflowAPI.getActiveUserTask(WorkflowDefinition.approval.definitionId(), workflowInstanceId);
-            String userTaskId = instance.getId();
-            
-            WorkflowUserTask workflowUserTask = new WorkflowUserTask();
-            workflowUserTask.setStatus(WorkflowStatus.READY);
-            workflowUserTask.setDecision(approvalStatus.name());
-            
-            workflowAPI.patchUserTask(userTaskId, workflowUserTask);
+            if(instance != null) {
+                String userTaskId = instance.getId();
+                
+                WorkflowUserTask workflowUserTask = new WorkflowUserTask();
+                workflowUserTask.setStatus(WorkflowStatus.READY);
+                workflowUserTask.setDecision(approvalStatus.name());
+                
+                workflowAPI.patchUserTask(userTaskId, workflowUserTask);
+            }
             return Struct.access(cerApproval).as(CERApproval.class);
         } else {
             return onChangeApprovalStatusByWorkflow(cerApprovalId, status);
