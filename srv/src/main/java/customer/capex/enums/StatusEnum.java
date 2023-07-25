@@ -4,7 +4,7 @@ public enum StatusEnum {
     
     NONE(0, "None"),
     PENDING(1, "Pending"),
-    ON_HOLD(2, "On Hold"),
+    HOLD(2, "On Hold"),
     REJECTED(3, "Rejected"),
     APPROVED(4, "Approved");
 

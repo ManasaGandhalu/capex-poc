@@ -1,4 +1,4 @@
-package customer.capex.service.xsuaa;
+package customer.capex.service.sap_xsuaa;
 
 import java.util.Optional;
 
@@ -32,7 +32,7 @@ public class XSUAATokenService {
 			XsuaaDefaultEndpoints endpointsProvider = new XsuaaDefaultEndpoints(config);
 			tokenFlows = new XsuaaTokenFlows(tokenService, endpointsProvider, clientIdentity);
 		} catch (HttpClientException e) {
-            
+            e.printStackTrace();
         }
         return Optional.ofNullable(tokenFlows);
     }

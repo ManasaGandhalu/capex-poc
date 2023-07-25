@@ -17,7 +17,7 @@ entity CER : cuid, db.fingerprints {
     CERType_ID: Integer;
     Status_ID: Integer;
     CurrentStage_ID: Integer;
-    WorkflowRequestId : String(50);  
+    WorkflowRequestId : String;  
     TATUserEmail         : String(300);
     CERCode   : String;
     BudgetaryID     : Integer; 
@@ -38,6 +38,9 @@ entity CER : cuid, db.fingerprints {
     MediaStoreId   : UUID;
     virtual AgainstBudgetaryTotalCost : Double default 0.0;
     virtual AgainstBudgetaryCount: Int64;
+    virtual  Attachment: LargeBinary;
+    virtual  AttachmentName : String;
+    virtual AttachmentType: String;
 }
 
 entity CERLineItem : cuid, db.fingerprints {

@@ -1,4 +1,4 @@
-package customer.capex.service.document_management.config;
+package customer.capex.service.sap_document_management.config;
 
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -22,7 +22,7 @@ import com.sap.cloud.security.xsuaa.client.OAuth2TokenResponse;
 import com.sap.cloud.security.xsuaa.tokenflows.TokenFlowException;
 import com.sap.cloud.security.xsuaa.tokenflows.XsuaaTokenFlows;
 
-import customer.capex.service.xsuaa.XSUAATokenService;
+import customer.capex.service.sap_xsuaa.XSUAATokenService;
 
 @Configuration
 public class CMISSessionHelper {
@@ -44,6 +44,8 @@ public class CMISSessionHelper {
 
 	@Value("${sap_document_service.client_secret:}")
 	public String clientSecret;
+
+	private static final String TOKEN_ENDPOINT = "/oauth/token";
 
 	@Autowired
 	XSUAATokenService xsuaaTokenService;
@@ -86,7 +88,7 @@ public class CMISSessionHelper {
 		parameters.put(SessionParameter.REPOSITORY_ID, repositoryId);
 
 		parameters.put(SessionParameter.AUTH_HTTP_BASIC, "false");
-		OAuth2TokenResponse token = getAccessToken();
+		OAuth2TokenResponse token = getXsuaaToken();
 		parameters.put(SessionParameter.HEADER + ".0", "Authorization: Bearer " + token.getAccessToken());
 
 		sessionExpiry = token.getExpiredAt();
@@ -94,9 +96,9 @@ public class CMISSessionHelper {
 		return session;
 	}
 
-	private OAuth2TokenResponse getAccessToken() {
+	private OAuth2TokenResponse getXsuaaToken() {
 		OAuth2TokenResponse tokenResponse = null;
-		XsuaaTokenFlows tokenFlows = xsuaaTokenService.tokenFlows(authUrl, clientId, clientSecret).get();
+		XsuaaTokenFlows tokenFlows = xsuaaTokenService.tokenFlows(authUrl + TOKEN_ENDPOINT, clientId, clientSecret).get();
 		if (tokenFlows != null) {
 			try {
 				tokenResponse = tokenFlows.clientCredentialsTokenFlow().execute();

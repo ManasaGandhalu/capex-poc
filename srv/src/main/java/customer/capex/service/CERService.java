@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import com.sap.cds.Struct;
 import com.sap.cds.services.cds.CdsCreateEventContext;
@@ -22,8 +24,15 @@ import cds.gen.capex.MasterTATLevel;
 import cds.gen.capex.MediaStore;
 import customer.capex.enums.StatusEnum;
 import customer.capex.repository.CqnRepository;
-import customer.capex.service.document_management.enums.MediaDirectory;
-import customer.capex.service.document_management.models.Media;
+import customer.capex.service.sap_document_management.enums.MediaDirectory;
+import customer.capex.service.sap_document_management.models.Media;
+import customer.capex.service.sap_workflow_management.WorkflowManagementAPI;
+import customer.capex.service.sap_workflow_management.contexts.ApprovalContext;
+import customer.capex.service.sap_workflow_management.enums.WorkflowDefinition;
+import customer.capex.service.sap_workflow_management.enums.WorkflowStatus;
+import customer.capex.service.sap_workflow_management.models.WorkflowInstance;
+import customer.capex.service.sap_workflow_management.models.WorkflowRequest;
+import customer.capex.service.sap_workflow_management.models.WorkflowUserTask;
 import customer.capex.utils.Utility;
 
 @Service
@@ -35,27 +44,32 @@ public class CERService {
     @Autowired
     CqnRepository cqnRepository;
 
+    @Autowired
+    WorkflowManagementAPI workflowAPI;
+
     public void afterCreateApprovalQuery(ApprovalQuery view, CdsCreateEventContext context) {
-        Media media = new Media();
-        media.setName(view.getAttachmentName());
-        media.setContentType(view.getAttachmentType());
-        media.setBytes(view.getAttachment());
-        MediaStore mediaStore = mediaStoreService.upload(MediaDirectory.APPROVAL_QUERY, view.getId(), media);
-        view.setMediaStoreId(mediaStore.getId());
-        cqnRepository.saveApprovalQueryMediaStoreId(view.getId(), mediaStore.getId());
+        if(view.getAttachmentName() != null){
+            Media media = new Media();
+            media.setName(view.getAttachmentName());
+            media.setContentType(view.getAttachmentType());
+            media.setBytes(view.getAttachment());
+            MediaStore mediaStore = mediaStoreService.upload(MediaDirectory.APPROVAL_QUERY, view.getId(), media);
+            if(mediaStore != null){
+                view.setMediaStoreId(mediaStore.getId());
+                cqnRepository.saveApprovalQueryMediaStoreId(view.getId(), mediaStore.getId());
+            }
+        }
     }
 
     public void afterReadApprovalQuery(List<ApprovalQuery> list, CdsReadEventContext context) {
         if(list.size() == 1) {
             ApprovalQuery view = list.get(0);
-            Media media = new Media();
-            media.setName(view.getAttachmentName());
-            media.setContentType(view.getAttachmentType());
-            media.setBytes(view.getAttachment());
             MediaStore mediaStore = mediaStoreService.download(MediaDirectory.APPROVAL_QUERY, view.getId());
-            view.setAttachment(mediaStore.getContent());
-            view.setAttachmentName(mediaStore.getMediaName());
-            view.setAttachmentType(mediaStore.getContentType());
+            if(mediaStore != null){
+                view.setAttachment(mediaStore.getContent());
+                view.setAttachmentName(mediaStore.getMediaName());
+                view.setAttachmentType(mediaStore.getContentType());
+            }
         }
     }
 
@@ -86,7 +100,8 @@ public class CERService {
             view.setCERApprovals(approvals);
             view.setTotalTATLevels(tatLevels.size());
             view.setStatusId(StatusEnum.PENDING.code());
-            view.setWorkflowRequestId("WF123");
+            String workflowRequestId = triggerApprovalWorkflow(view);
+            view.setWorkflowRequestId(workflowRequestId);
             double totalBudgetaryCost = 0d;
             for(CERLineItem item: view.getCERLineItems()) {
                 totalBudgetaryCost += item.getGrossCost();
@@ -120,6 +135,45 @@ public class CERService {
 
     public CERApproval onUpdateApprovalStatus(String cerApprovalId, String status) {
         cds.gen.capex.CERApproval cerApproval = cqnRepository.findCERApproval(cerApprovalId);
+        Assert.notNull(cerApproval, "Approval object not found.");
+        String workflowInstanceId = cqnRepository.findWorkflowRequestIdByCerId(cerApproval.getCerId());
+        if(workflowInstanceId != null) {
+            StatusEnum approvalStatus = StatusEnum.getEnum(status);
+            WorkflowInstance instance = workflowAPI.getActiveUserTask(WorkflowDefinition.approval.definitionId(), workflowInstanceId);
+            String userTaskId = instance.getId();
+            
+            WorkflowUserTask workflowUserTask = new WorkflowUserTask();
+            workflowUserTask.setStatus(WorkflowStatus.READY);
+            workflowUserTask.setDecision(approvalStatus.name());
+            
+            workflowAPI.patchUserTask(userTaskId, workflowUserTask);
+            return Struct.access(cerApproval).as(CERApproval.class);
+        } else {
+            return onChangeApprovalStatusByWorkflow(cerApprovalId, status);
+        }
+    }
+
+    public String triggerApprovalWorkflow(Cer cer) {
+        WorkflowRequest<ApprovalContext> workflowRequest = new WorkflowRequest<>();
+        ApprovalContext context = new ApprovalContext();
+        context.setCerId(cer.getId());
+        workflowRequest.setDefinitionId(WorkflowDefinition.approval.definitionId());
+        workflowRequest.setContext(context);
+
+        WorkflowInstance workflowInstance = null;
+        // trigger workflow request
+        ResponseEntity<WorkflowInstance> response = workflowAPI.initiate(workflowRequest);
+        if(response.getStatusCode().is2xxSuccessful()) {
+            workflowInstance = response.getBody();
+        }
+        if(workflowInstance != null) {
+            return workflowInstance.getId();
+        }
+        return null;
+    }
+
+    public CERApproval onChangeApprovalStatusByWorkflow(String cerApprovalId, String status) {
+        cds.gen.capex.CERApproval cerApproval = cqnRepository.findCERApproval(cerApprovalId);
         cerApproval.setStatus(status);
         cqnRepository.updateCERApproval(cerApproval);
         String currentTATUserEmail = cerApproval.getTATUserEmail();
@@ -139,11 +193,16 @@ public class CERService {
     }
 
     public void uploadCERAttachment(Cer view, CdsCreateEventContext context) {
-        Media media = new Media();
-        media.setName(view.getAttachmentName());
-        media.setContentType(view.getAttachmentType());
-        media.setBytes(view.getAttachment());
-        MediaStore mediaStore = mediaStoreService.upload(MediaDirectory.CER_ATTACHMENT, view.getId(), media);
-        view.setMediaStoreId(mediaStore.getId());
+       
+        if(view.getAttachmentName() != null){
+            Media media = new Media();
+            media.setName(view.getAttachmentName());
+            media.setContentType(view.getAttachmentType());
+            media.setBytes(view.getAttachment());
+            MediaStore mediaStore = mediaStoreService.upload(MediaDirectory.CER_ATTACHMENT, view.getId(), media);
+            if(mediaStore != null){
+                view.setMediaStoreId(mediaStore.getId());
+            }
+        }
     }
 }

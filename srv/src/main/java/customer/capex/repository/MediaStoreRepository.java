@@ -3,8 +3,8 @@ package customer.capex.repository;
 import java.util.List;
 
 import cds.gen.capex.MediaStore;
-import customer.capex.service.document_management.enums.MediaDirectory;
-import customer.capex.service.document_management.enums.MediaStatus;
+import customer.capex.service.sap_document_management.enums.MediaDirectory;
+import customer.capex.service.sap_document_management.enums.MediaStatus;
 
 public interface MediaStoreRepository {
 

@@ -16,3 +16,15 @@ sap_document_service:
   auth_url:
   client_id: 
   client_secret:
+sap_workflow_management:
+  auth_url: https://capex-trial-account-k217gga9.authentication.us10.hana.ondemand.com
+  api_url: https://api.workflow-sap.cfapps.us10.hana.ondemand.com/workflow-service/rest/v1/workflow-instances
+  usertask_url: https://api.workflow-sap.cfapps.us10.hana.ondemand.com/workflow-service/rest/v1/task-instances
+  client_id: sb-clone-e08a3d72-c64f-4a32-8e93-5003d76eab55!b178830|workflow!b1774
+  client_secret: 6e6590dd-01bb-47c7-b051-c780058946a9$QGNz_A2FB_JkJtnbQXaut2DhFOfZ6Hugqa4tguEKevI=
+# sap_workflow_management:
+#   auth_url: ${vcap.services.workflow.credentials.uaa.url}
+#   api_url: ${vcap.services.workflow.credentials.endpoints.workflow_rest_url}/v1/workflow-instances
+#   usertask_url: ${vcap.services.workflow.credentials.endpoints.workflow_rest_url}/v1/task-instances
+#   client_id: ${vcap.services.workflow.credentials.uaa.clientid}
+#   client_secret: ${vcap.services.workflow.credentials.uaa.clientsecret}

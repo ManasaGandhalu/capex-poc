@@ -15,7 +15,7 @@ service AdminService {
     entity MasterCostCenter as projection on db.MasterCostCenter;
     entity MasterProfitCenter as projection on db.MasterProfitCenter;
     entity Employee as projection on db.Employee;
-    // entity CER as projection on db.CER;
+    entity CER as projection on db.CER;
     entity CERApproval as projection on db.CERApproval {
         *,
         virtual 0 as TotalQueries: Int64,
@@ -35,21 +35,23 @@ service AdminService {
         virtual null as AttachmentType: String
     };
 
-    entity CER as projection on db.CER {
-        *,
+    //     entity CER as projection on db.CER {
+    //     *,
 
-        @Core.Computed: false
-        virtual null as Attachment: LargeBinary,
+    //     @Core.Computed: false
+    //     virtual null as Attachment: LargeBinary,
 
-        @Core.Computed: false
-        virtual null as AttachmentName : String,
+    //     @Core.Computed: false
+    //     virtual null as AttachmentName : String,
         
-        @Core.Computed: false
-        virtual null as AttachmentType: String
-    };
+    //     @Core.Computed: false
+    //     virtual null as AttachmentType: String
+    // };
 
     entity ApprovalQueryRecipients as projection on db.ApprovalQueryRecipients;
 
     function UpdateApprovalStatus(CerApprovalId: UUID, Status: String) returns CERApproval;
+
+    function ChangeApprovalStatusByWorkflow(CerApprovalId: UUID, Status: String) returns CERApproval;
     
 }

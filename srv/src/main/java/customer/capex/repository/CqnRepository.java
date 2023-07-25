@@ -33,4 +33,6 @@ public interface CqnRepository {
 
     public void updateCERApprovalDetails(String cerId, int statusId, Integer currentTATLevel, String currentTATUserEmail);
 
+    public String findWorkflowRequestIdByCerId(String cerId);
+
 }

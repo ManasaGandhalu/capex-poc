@@ -136,4 +136,13 @@ public class CqnRepositoryImpl implements CqnRepository {
         db.run(update);
     }
 
+    public String findWorkflowRequestIdByCerId(String cerId) {
+        CqnSelect select = Select.from(Cer_.class).byId(cerId).columns(c -> c.WorkflowRequestId());
+		Result result = db.run(select);
+        if(result.rowCount() > 0) {
+            return result.single(Cer.class).getWorkflowRequestId();
+        }
+		return null;
+    }
+
 }
