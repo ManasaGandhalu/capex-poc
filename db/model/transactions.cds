@@ -36,6 +36,9 @@ entity CER : cuid, db.fingerprints {
     CerLocation     : String(50);
     BudgetaryTotalCost  : Double default 0.0;
     MediaStoreId   : UUID;
+    RecommendedVendor   : Boolean;	
+    PaymentTerms    : Integer;
+    DeliveryTerms   : Integer;
     virtual AgainstBudgetaryTotalCost : Double default 0.0;
     virtual AgainstBudgetaryCount: Int64;
     virtual  Attachment: LargeBinary;
