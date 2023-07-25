@@ -21,7 +21,15 @@
 		<cds.install-cdsdk.version>6.7.1</cds.install-cdsdk.version>
 
 		<cds.install-node.downloadUrl>https://nodejs.org/dist/</cds.install-node.downloadUrl>
+
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<cf-logging-version>3.7.0</cf-logging-version>
+		<log4j2.version>2.20.0</log4j2.version>
+		<slf4j.version>1.7.24</slf4j.version>
+
 	</properties>
+	
 
 	<modules>
 		<module>srv</module>
@@ -46,6 +54,7 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			
 		</dependencies>
 	</dependencyManagement>
 
