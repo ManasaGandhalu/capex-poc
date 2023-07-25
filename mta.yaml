@@ -11,7 +11,7 @@ modules:
     parameters:
       buildpack: sap_java_buildpack
     properties:
-      SPRING_PROFILES_ACTIVE: 'cloud,sandbox'
+      SPRING_PROFILES_ACTIVE: 'dev'
       JBP_CONFIG_COMPONENTS: "jres: ['com.sap.xs.java.buildpack.jre.SAPMachineJRE']"
       JBP_CONFIG_SAP_MACHINE_JRE: '{ use_offline_repository: false, version: 17.+ }'
     build-parameters:
