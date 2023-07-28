@@ -4,5 +4,8 @@
   },
   "requires": {
     "db": "hana-cloud"
+  },
+  "odata": {
+    "version": "v4"
   }
 }

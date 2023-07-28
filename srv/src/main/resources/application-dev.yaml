@@ -1,0 +1,19 @@
+---
+spring:
+  config.activate.on-profile: dev
+cds:
+  sql:
+    supportedLocales: "*"
+sap_document_service:
+  enabled: false
+  api_url: 
+  repository_id: 
+  auth_url:
+  client_id: 
+  client_secret:
+sap_workflow_management:
+  auth_url: ${vcap.services.wm_workflow.credentials.uaa.url}
+  api_url: ${vcap.services.wm_workflow.credentials.endpoints.workflow_rest_url}/v1/workflow-instances
+  usertask_url: ${vcap.services.wm_workflow.credentials.endpoints.workflow_rest_url}/v1/task-instances
+  client_id: ${vcap.services.wm_workflow.credentials.uaa.clientid}
+  client_secret: ${vcap.services.wm_workflow.credentials.uaa.clientsecret}
