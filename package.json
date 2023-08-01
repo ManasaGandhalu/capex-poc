@@ -12,7 +12,7 @@
       "db": {
         "kind": "sqlite",
         "credentials": {
-          "database": "sqlite.db"
+          "database": "db.sqlite"
         }
       }
     }

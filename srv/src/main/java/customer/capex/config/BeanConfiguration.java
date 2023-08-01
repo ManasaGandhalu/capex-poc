@@ -9,6 +9,11 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.DispatcherType;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.core.Ordered;
+import com.sap.hcp.cf.logging.servlet.filter.RequestLoggingFilter;
+
 @Configuration
 public class BeanConfiguration {
     
@@ -31,6 +36,27 @@ public class BeanConfiguration {
 	   
 		return restTemplate;
 	}
+
+	@Bean
+	public FilterRegistrationBean<RequestLoggingFilter> loggingFilter() {
+		FilterRegistrationBean<RequestLoggingFilter> filterRegistrationBean = new FilterRegistrationBean<>();
+		filterRegistrationBean.setFilter(new RequestLoggingFilter());
+		filterRegistrationBean.setName("request-logging");
+		filterRegistrationBean.addUrlPatterns("/*");
+		filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST);
+		filterRegistrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+		return filterRegistrationBean;
+	}
+	
+// 	@Bean
+// public FilterRegistrationBean loggingFilter() {
+// 	FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+// 	filterRegistrationBean.setFilter(new RequestLoggingFilter());
+// 	filterRegistrationBean.setName("request-logging");
+// 	filterRegistrationBean.addUrlPatterns("/*");
+// 	filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST);
+// 	return filterRegistrationBean;
+// }
 
 
 }
