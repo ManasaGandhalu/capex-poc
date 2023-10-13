@@ -142,6 +142,8 @@ public class CERService {
         cds.gen.capex.CERApproval cerApproval = cqnRepository.findCERApproval(cerApprovalId);
         Assert.notNull(cerApproval, "Approval object not found.");
         String workflowInstanceId = cqnRepository.findWorkflowRequestIdByCerId(cerApproval.getCerId());
+        
+        workflowInstanceId = null; //TODO: patch for testing.
         if(workflowInstanceId != null) {
             StatusEnum approvalStatus = StatusEnum.getEnum(status);
             WorkflowInstance instance = workflowAPI.getActiveUserTask(WorkflowDefinition.approval.definitionId(), workflowInstanceId);
