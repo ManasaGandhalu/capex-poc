@@ -35,19 +35,6 @@ service AdminService {
         virtual null as AttachmentType: String
     };
 
-    //     entity CER as projection on db.CER {
-    //     *,
-
-    //     @Core.Computed: false
-    //     virtual null as Attachment: LargeBinary,
-
-    //     @Core.Computed: false
-    //     virtual null as AttachmentName : String,
-        
-    //     @Core.Computed: false
-    //     virtual null as AttachmentType: String
-    // };
-
     entity ApprovalQueryRecipients as projection on db.ApprovalQueryRecipients;
 
     function UpdateApprovalStatus(CerApprovalId: UUID, Status: String) returns CERApproval;
