@@ -12,6 +12,7 @@ entity CER : cuid, db.fingerprints {
     CERApprovals     :  Composition of many CERApproval on $self.ID = CERApprovals.CER_ID;
     CurrentApproval :  Association to CERApproval on $self.ID = CurrentApproval.CER_ID and $self.CurrentTATLevel = CurrentApproval.Level;
     TATUser: Association to db.Employee on upper(TATUser.Email) = upper($self.TATUserEmail);
+    CreatedByUser: Association to db.Employee on upper(CreatedByUser.Email) = upper($self.createdBy);
     TotalTATLevels :  Integer;
     CurrentTATLevel: Integer;
     CERType_ID: Integer;
